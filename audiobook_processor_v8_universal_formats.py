@@ -392,53 +392,37 @@ Return ONLY a JSON object:
             }
     
     def split_chapters_to_files(self, text, chapter_structure):
-        """Split text into individual chapter files using regex - ACX COMPLIANT"""
+        """Split text into individual chapter files using AI-detected chapters - ACX COMPLIANT"""
         import re
-        print(f"[5/7] Splitting text into chapter files (regex-based)...")
+        print(f"[5/7] Splitting text into chapter files (AI-based)...")
         
-        # Define chapter marker patterns (more selective to avoid page numbers)
-        chapter_patterns = [
-            # Pattern 1: "Chapter X" or "CHAPTER X"
-            r'(?:^|\n)\s*(?:CHAPTER|Chapter)\s+(\d+|[IVXLCDM]+|One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen|Fourteen|Fifteen|Sixteen|Seventeen|Eighteen|Nineteen|Twenty)(?:\s*[:\-\.]?\s*([^\n]*))?(?:\n|$)',
+        # Use AI-detected chapters if available
+        ai_chapters = chapter_structure.get('chapters', [])
+        
+        if ai_chapters:
+            print(f"  Using {len(ai_chapters)} AI-detected chapters")
+            # Convert AI chapters to markers
+            chapter_markers = []
+            for ch in ai_chapters:
+                # Find the chapter in the text using start_text
+                start_text = ch.get('start_text', '').strip()
+                if start_text:
+                    # Search for the start text in the full text
+                    pos = text.find(start_text)
+                    if pos != -1:
+                        chapter_markers.append({
+                            'position': pos,
+                            'number': ch.get('number', ''),
+                            'title': ch.get('title', ''),
+                            'full_title': f"{ch.get('number', '')} {ch.get('title', '')}".strip()
+                        })
             
-            # Pattern 2: Single digit (1-50) followed by newline AND a title line (to avoid page numbers)
-            r'(?:^|\n)\s*([1-9]|[1-4][0-9]|50)\s*\n\s*([A-Z][^\n]{3,50})\s*\n',
-            
-            # Pattern 3: Prologue, Epilogue, etc
-            r'(?:^|\n)\s*(Prologue|Epilogue|Preface|Introduction|Conclusion)(?:\s*[:\-]?\s*([^\n]*))?(?:\n|$)',
-            
-            # Pattern 4: Part markers
-            r'(?:^|\n)\s*(?:PART|Part)\s+([IVXLCDM]+|One|Two|Three|Four|Five)(?:\s*[:\-\.]?\s*([^\n]*))?(?:\n|$)',
-        ]
-        
-        # Find all chapter markers
-        chapter_markers = []
-        for pattern in chapter_patterns:
-            for match in re.finditer(pattern, text, re.IGNORECASE | re.MULTILINE):
-                pos = match.start()
-                groups = match.groups()
-                chapter_num = groups[0] if groups else ""
-                chapter_title = groups[1] if len(groups) > 1 and groups[1] else ""
-                full_title = f"{chapter_num} {chapter_title}".strip() if chapter_title else chapter_num.strip()
-                
-                chapter_markers.append({
-                    'position': pos,
-                    'number': chapter_num,
-                    'title': full_title
-                })
-        
-        # Remove duplicates at same position
-        unique_markers = []
-        seen_positions = set()
-        for marker in sorted(chapter_markers, key=lambda x: x['position']):
-            is_duplicate = any(abs(marker['position'] - pos) < 50 for pos in seen_positions)
-            if not is_duplicate:
-                unique_markers.append(marker)
-                seen_positions.add(marker['position'])
-        
-        chapter_markers = sorted(unique_markers, key=lambda x: x['position'])
-        
-        print(f"  Found {len(chapter_markers)} chapter markers")
+            # Sort by position
+            chapter_markers = sorted(chapter_markers, key=lambda x: x['position'])
+            print(f"  Matched {len(chapter_markers)} chapters in text")
+        else:
+            print("  No AI chapters found, using fallback regex")
+            chapter_markers = []
         
         if not chapter_markers:
             print("⚠️ No chapters detected, saving full text")
@@ -447,15 +431,36 @@ Return ONLY a JSON object:
                 f.write(text)
             return {"chapter_files": [{"file": "full_text.txt", "title": "Full Text", "word_count": len(text.split())}]}
         
-        # Extract chapters
+        # Extract chapters with smart numbering
         chapter_files = []
+        chapter_number = 0  # Start at 0 for Prologue
+        
         for i, marker in enumerate(chapter_markers):
             start_pos = marker['position']
             end_pos = chapter_markers[i + 1]['position'] if i < len(chapter_markers) - 1 else len(text)
             
             chapter_text = text[start_pos:end_pos].strip()
-            safe_title = self.sanitize_folder_name(marker['title']) or f"Chapter_{i+1}"
-            filename = f"{i+1:02d}_{safe_title}.txt"
+            
+            # Smart chapter numbering
+            full_title = marker.get('full_title', marker.get('title', ''))
+            title_lower = full_title.lower()
+            
+            if 'prologue' in title_lower or 'preface' in title_lower or 'introduction' in title_lower:
+                file_number = 0
+                safe_title = self.sanitize_folder_name(full_title)
+            elif 'epilogue' in title_lower or 'conclusion' in title_lower:
+                file_number = 900  # Put epilogue at end
+                safe_title = self.sanitize_folder_name(full_title)
+            elif 'part' in title_lower:
+                # Part markers don't get their own files, skip
+                continue
+            else:
+                # Regular chapters
+                chapter_number += 1
+                file_number = chapter_number
+                safe_title = self.sanitize_folder_name(full_title) or f"Chapter_{chapter_number}"
+            
+            filename = f"{file_number:02d}_{safe_title}.txt"
             filepath = os.path.join(self.folders["05_chapter_splits"], filename)
             
             with open(filepath, 'w', encoding='utf-8') as f:
@@ -463,8 +468,8 @@ Return ONLY a JSON object:
             
             word_count = len(chapter_text.split())
             chapter_files.append({
-                "number": i + 1,
-                "title": marker['title'],
+                "number": file_number,
+                "title": full_title,
                 "file": filename,
                 "word_count": word_count,
                 "path": filepath,
@@ -835,11 +840,16 @@ The End.
                 "age_rating": metadata.get('estimated_age_rating', 'General')
             }
             
-            # Step 5.6: Prepare chapters for narration (65-70%)
-            tracker.update(66, "Preparing Narration", "Converting names to Cyrillic and adding SSML...", eta_seconds=30)
-            narration_prep_result = self.prepare_chapters_for_narration(chapter_split_result, book_info)
-            if narration_prep_result:
-                tracker.update(70, "Narration Ready", f"Prepared {narration_prep_result['successful']} chapters with native pronunciation", eta_seconds=12)
+            # Step 5.6: Prepare chapters for narration (65-70%) - OPTIONAL
+            narration_prep_result = None
+            try:
+                tracker.update(66, "Preparing Narration", "Converting names to Cyrillic and adding SSML...", eta_seconds=30)
+                narration_prep_result = self.prepare_chapters_for_narration(chapter_split_result, book_info)
+                if narration_prep_result:
+                    tracker.update(70, "Narration Ready", f"Prepared {narration_prep_result['successful']} chapters with native pronunciation", eta_seconds=12)
+            except Exception as e:
+                print(f"⚠️ Narration prep skipped: {e}")
+                tracker.update(70, "Narration Prep Skipped", "Continuing with basic processing", eta_seconds=5)
             
             # Merge metadata with validation
             book_info = {
