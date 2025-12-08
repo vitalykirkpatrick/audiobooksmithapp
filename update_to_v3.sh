@@ -62,7 +62,8 @@ echo "✅ Dependencies checked"
 # Step 4: Update server file
 echo ""
 echo "[4/6] Updating webhook server..."
-cp audiobook_webhook_server_v3.py "$WEBHOOK_DIR/audiobook_webhook_server.py"
+echo "Downloading webhook server v3..."
+curl -sSL https://raw.githubusercontent.com/vitalykirkpatrick/audiobooksmithapp/main/audiobook_webhook_server_v3.py -o "$WEBHOOK_DIR/audiobook_webhook_server.py"
 chmod +x "$WEBHOOK_DIR/audiobook_webhook_server.py"
 echo "✅ Server updated to v3"
 
