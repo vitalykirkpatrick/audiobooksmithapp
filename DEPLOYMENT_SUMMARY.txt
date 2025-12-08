@@ -1,0 +1,208 @@
+╔════════════════════════════════════════════════════════════╗
+║  AudiobookSmith Webhook - Complete Deployment Package     ║
+║  Version 2.2.0 - With Backup & Auto-Deployment            ║
+╚════════════════════════════════════════════════════════════╝
+
+📦 PACKAGE CONTENTS
+═══════════════════════════════════════════════════════════
+
+Deployment Scripts (3):
+  • deploy_with_backup.sh      - Automated deployment with backup ⭐
+  • deploy_with_password.sh    - Simple deployment
+  • DEPLOY_NOW.sh              - One-click deployment
+
+Core Components (2):
+  • audiobook_webhook_server.py  - Flask webhook server
+  • audiobook_processor.py       - Book processing script
+
+Configuration Files (2):
+  • nginx_multi_domain.conf      - Nginx config for both domains
+  • setup_ssl_both_domains.sh    - SSL setup script
+
+Frontend Integration (1):
+  • frontend_integration_code.jsx - React component
+
+Documentation (9):
+  • DEPLOY_INSTRUCTIONS.md       - Complete deployment guide ⭐
+  • START_HERE.md                - Quick start guide
+  • MULTI_DOMAIN_SETUP.md        - Multi-domain setup
+  • README.md                    - Package overview
+  • WEBHOOK_INTEGRATION_DOCUMENTATION.md
+  • DEPLOYMENT_GUIDE.md
+  • DEPLOYMENT_README.md
+  • INTEGRATION_SUMMARY.md
+  • QUICK_START_GUIDE.md
+
+Utilities (3):
+  • audit_server.sh              - Server audit script
+  • deployment_config.sh         - Configuration settings
+
+Total: 21 files
+
+🎯 SERVER CONFIGURATION
+═══════════════════════════════════════════════════════════
+
+IP Address:    172.245.67.47
+Domain 1:      websolutionsserver.net
+Domain 2:      audiobooksmith.app
+SSH User:      root
+SSH Password:  Chernivtsi_23
+Install Path:  /root/audiobook_webhook
+Backup Path:   /root/audiobook_webhook_backup_YYYYMMDD_HHMMSS/
+
+🚀 QUICK START (3 COMMANDS)
+═══════════════════════════════════════════════════════════
+
+1. Deploy with automatic backup:
+   ./deploy_with_backup.sh
+
+2. Configure SSL (run on server):
+   ssh root@172.245.67.47 'cd /root/audiobook_webhook && ./setup_ssl_both_domains.sh'
+
+3. Test:
+   curl https://audiobooksmith.app/webhook/health
+
+✨ KEY FEATURES
+═══════════════════════════════════════════════════════════
+
+✅ Automatic backup before deployment
+✅ Automatic rollback on failure
+✅ Error handling with retries (up to 3 attempts)
+✅ Multi-domain support (2 domains)
+✅ Full SSL/HTTPS encryption
+✅ Automatic dependency installation
+✅ Service management scripts
+✅ Comprehensive logging
+✅ Health check endpoints
+✅ 100MB file upload support
+
+🛡️ BACKUP & RESTORE
+═══════════════════════════════════════════════════════════
+
+Backup is created automatically before deployment.
+
+Restore from backup:
+  ssh root@172.245.67.47 '/root/audiobook_webhook_backup_*/restore.sh'
+
+Manual backup:
+  ssh root@172.245.67.47
+  cp -r /root/audiobook_webhook /root/audiobook_webhook_backup_manual_$(date +%Y%m%d_%H%M%S)
+
+🔧 SERVER MANAGEMENT
+═══════════════════════════════════════════════════════════
+
+Start:    ssh root@172.245.67.47 '/root/audiobook_webhook/start.sh'
+Stop:     ssh root@172.245.67.47 '/root/audiobook_webhook/stop.sh'
+Status:   ssh root@172.245.67.47 '/root/audiobook_webhook/status.sh'
+Logs:     ssh root@172.245.67.47 'tail -f /root/audiobook_webhook/logs/webhook_server.log'
+
+🌐 SERVICE URLS (After SSL Setup)
+═══════════════════════════════════════════════════════════
+
+N8N Workflow Automation:
+  • https://websolutionsserver.net
+  • https://audiobooksmith.app
+
+AudiobookSmith Webhook:
+  • https://websolutionsserver.net/webhook/audiobook-process
+  • https://audiobooksmith.app/webhook/audiobook-process
+
+Health Check:
+  • https://websolutionsserver.net/webhook/health
+  • https://audiobooksmith.app/webhook/health
+
+📋 DEPLOYMENT PHASES
+═══════════════════════════════════════════════════════════
+
+Phase 1: Check Prerequisites
+  - Install sshpass if needed
+  - Verify local environment
+
+Phase 2: Test Connection
+  - Connect to server via SSH
+  - Verify credentials
+
+Phase 3: Create Backup ⭐
+  - Backup existing installation
+  - Create restore script
+  - Save backup manifest
+
+Phase 4: Audit Server
+  - Check Python, Flask, Nginx
+  - Check port availability
+  - Check disk space
+
+Phase 5: Install & Configure
+  - Create directory structure
+  - Upload files
+  - Install dependencies
+  - Configure paths and ports
+  - Create management scripts
+
+Phase 6: Start Services
+  - Start webhook server
+  - Verify process is running
+
+Phase 7: Test Installation
+  - Test health endpoint
+  - Verify responses
+  - Generate deployment report
+
+✅ SUCCESS CRITERIA
+═══════════════════════════════════════════════════════════
+
+✓ Deployment script completes without errors
+✓ Backup created successfully
+✓ Webhook server is running
+✓ Health endpoint returns "healthy"
+✓ No critical errors in deployment.log
+✓ SSL certificates obtained (after SSL setup)
+✓ Both domains accessible via HTTPS
+
+📞 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════
+
+Issue: sshpass not found
+Fix:   sudo apt-get install sshpass
+
+Issue: SSH connection fails
+Fix:   ssh root@172.245.67.47  (test manually)
+
+Issue: Deployment fails
+Fix:   Automatic rollback will restore previous version
+       Check deployment.log for details
+
+Issue: Port already in use
+Fix:   Script automatically finds available port (5001-5003)
+
+Issue: SSL certificate fails
+Fix:   Ensure DNS is pointing to 172.245.67.47
+       Wait for DNS propagation (up to 48 hours)
+
+📚 DOCUMENTATION
+═══════════════════════════════════════════════════════════
+
+Start with:
+  1. DEPLOY_INSTRUCTIONS.md  - Complete deployment guide
+  2. START_HERE.md           - Quick start guide
+
+For details:
+  3. MULTI_DOMAIN_SETUP.md   - Multi-domain configuration
+  4. WEBHOOK_INTEGRATION_DOCUMENTATION.md - API docs
+
+🎉 READY TO DEPLOY!
+═══════════════════════════════════════════════════════════
+
+Run this command to start:
+  ./deploy_with_backup.sh
+
+Estimated time: 5-10 minutes
+Difficulty: Easy (fully automated)
+Status: Production Ready ✅
+
+═══════════════════════════════════════════════════════════
+Package Version: 2.2.0
+Date: December 7, 2025
+Server: 172.245.67.47 (websolutionsserver.net)
+Domains: websolutionsserver.net + audiobooksmith.app
+═══════════════════════════════════════════════════════════
