@@ -189,13 +189,75 @@ def view_session(session_id):
                 report_path = os.path.join(root, "10_delivery_package", "processing_report.json")
                 if os.path.exists(report_path):
                     import json
+                    from datetime import datetime
+                    
                     with open(report_path, 'r') as f:
                         report = json.load(f)
-                    return jsonify({
-                        "success": True,
-                        "session_id": session_id,
-                        "report": report
-                    })
+                    
+                    # Load HTML template
+                    template_path = os.path.join(os.path.dirname(__file__), "analysis_results_template.html")
+                    with open(template_path, 'r') as f:
+                        html_template = f.read()
+                    
+                    # Extract data from report
+                    metadata = report.get('metadata', {})
+                    validation = report.get('validation', {})
+                    chapters = report.get('chapters', [])
+                    folder_structure = report.get('folder_structure', {})
+                    
+                    # Format chapters HTML
+                    chapters_html = ""
+                    for chapter in chapters:
+                        chapter_num = chapter.get('number', '00')
+                        is_epilogue = chapter_num == '900'
+                        badge_class = 'epilogue' if is_epilogue else ''
+                        
+                        chapters_html += f'''
+                        <div class="chapter-item">
+                            <span class="chapter-number {badge_class}">{chapter_num}</span>
+                            <span class="chapter-title">{chapter.get('title', 'Untitled')}</span>
+                            <span class="chapter-words">{chapter.get('word_count', 0):,} words</span>
+                        </div>
+                        '''
+                    
+                    # Format folders HTML
+                    folders_html = ""
+                    folder_names = [
+                        "01_raw_text",
+                        "02_metadata",
+                        "03_chapter_analysis",
+                        "04_cleaned_text",
+                        "05_chapter_splits",
+                        "06_narration_prep",
+                        "07_voice_samples",
+                        "08_audio_ready",
+                        "09_quality_reports",
+                        "10_delivery_package"
+                    ]
+                    for folder in folder_names:
+                        folders_html += f'<div class="folder-item">{folder}</div>\n'
+                    
+                    # Format processing date
+                    try:
+                        date_obj = datetime.strptime(session_id, "%Y-%m-%dT%H-%M-%S")
+                        processing_date = date_obj.strftime("%B %d, %Y at %I:%M %p")
+                    except:
+                        processing_date = session_id
+                    
+                    # Replace template variables
+                    html = html_template.replace('{{session_id}}', session_id)
+                    html = html.replace('{{processing_date}}', processing_date)
+                    html = html.replace('{{title}}', metadata.get('title', 'Unknown Title'))
+                    html = html.replace('{{author}}', metadata.get('author', 'Unknown Author'))
+                    html = html.replace('{{genre}}', metadata.get('genre', 'Unknown'))
+                    html = html.replace('{{chapter_count}}', str(len(chapters)))
+                    html = html.replace('{{word_count}}', f"{validation.get('word_count', 0):,}")
+                    html = html.replace('{{page_count}}', str(validation.get('estimated_pages', 0)))
+                    html = html.replace('{{character_count}}', f"{validation.get('character_count', 0):,}")
+                    html = html.replace('{{chapters}}', chapters_html)
+                    html = html.replace('{{folders}}', folders_html)
+                    
+                    return html
         
         return jsonify({
             "success": False,
