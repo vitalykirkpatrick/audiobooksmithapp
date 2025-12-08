@@ -241,11 +241,11 @@ class AIBookProcessor:
                 response = self.client.chat.completions.create(
                     model="gpt-4.1-mini",
                     messages=[
-                        {"role": "system", "content": "You are a chapter detection expert. Identify ONLY actual chapter headings, NOT page numbers, headers, or footers. Return JSON array of chapter titles."},
-                        {"role": "user", "content": f"Find all chapter headings in this text. Ignore page numbers, running headers, and footers. Return ONLY chapter titles as JSON array:\n\n{chunk[:10000]}"}
+                        {"role": "system", "content": "You are a chapter detection expert. Identify ONLY actual chapter headings from the BODY TEXT, NOT from table of contents, page numbers, headers, or footers. Skip any section that looks like a contents/index page. Return JSON array of chapter titles."},
+                        {"role": "user", "content": f"Find all chapter headings in this text. IMPORTANT: Skip the table of contents section entirely - only detect chapters that appear in the actual body text with surrounding paragraphs. Ignore page numbers, running headers, footers, and TOC entries. Look for chapter markers followed by actual story content. Return ONLY chapter titles as JSON array:\n\n{chunk[:10000]}"}
                     ],
                     temperature=0.1,
-                    max_tokens=500
+                    max_tokens=1000
                 )
                 
                 result = response.choices[0].message.content.strip()
