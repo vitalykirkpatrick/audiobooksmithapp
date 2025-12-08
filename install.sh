@@ -89,7 +89,7 @@ fi
 # Check Flask
 if ! $PYTHON_CMD -c "import flask" 2>/dev/null; then
     echo -e "${YELLOW}⚠️  Flask not found, installing...${NC}"
-    pip3 install flask
+    pip3 install flask --ignore-installed blinker || pip3 install flask --break-system-packages
 fi
 
 echo -e "${GREEN}✅ Prerequisites checked${NC}"
