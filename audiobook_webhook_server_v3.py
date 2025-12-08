@@ -5,6 +5,7 @@ Receives book uploads, performs comprehensive analysis, and returns detailed res
 """
 
 from flask import Flask, request, jsonify, send_from_directory, render_template_string
+from flask_cors import CORS
 import os
 import json
 import hashlib
@@ -14,6 +15,16 @@ import subprocess
 import re
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/*": {
+        "origins": ["https://audiobooksmith.com", "http://localhost:*", "https://localhost:*"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"],
+        "max_age": 3600
+    }
+})
 
 # Configuration
 UPLOAD_FOLDER = '/root/audiobook_uploads'
