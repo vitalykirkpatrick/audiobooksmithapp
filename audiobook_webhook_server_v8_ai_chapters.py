@@ -105,8 +105,8 @@ def upload_book():
             project_id=safe_filename,
             user_email=email,
             working_dir=WORKING_DIR,
-            enable_narration_prep=False,  # Disabled for now
-            enable_voice_recommendations=False  # Disabled for now
+            enable_narration_prep=True,  # Enabled
+            enable_voice_recommendations=True  # Enabled
         )
         
         result = processor.process_book()
@@ -194,8 +194,8 @@ def view_session(session_id):
                     with open(report_path, 'r') as f:
                         report = json.load(f)
                     
-                    # Load HTML template
-                    template_path = os.path.join(os.path.dirname(__file__), "analysis_results_template.html")
+                    # Load HTML template (v2 with advanced features)
+                    template_path = os.path.join(os.path.dirname(__file__), "analysis_results_template_v2.html")
                     with open(template_path, 'r') as f:
                         html_template = f.read()
                     
@@ -203,20 +203,82 @@ def view_session(session_id):
                     metadata = report.get('metadata', {})
                     validation = report.get('validation', {})
                     chapters = report.get('chapters', [])
+                    narration_chapters = report.get('narration_chapters', [])
+                    voice_recommendations = report.get('voice_recommendations', {})
+                    estimated_duration = report.get('estimated_duration', 'N/A')
                     folder_structure = report.get('folder_structure', {})
                     
-                    # Format chapters HTML
+                    # Format chapters HTML (with duration if available)
                     chapters_html = ""
-                    for chapter in chapters:
+                    for i, chapter in enumerate(chapters):
                         chapter_num = chapter.get('number', '00')
                         is_epilogue = chapter_num == '900'
                         badge_class = 'epilogue' if is_epilogue else ''
+                        
+                        # Get duration from narration chapters if available
+                        duration_html = ""
+                        if narration_chapters and i < len(narration_chapters):
+                            duration_min = narration_chapters[i].get('estimated_duration_minutes', 0)
+                            duration_html = f'<span class="chapter-duration">~{int(duration_min)} min</span>'
                         
                         chapters_html += f'''
                         <div class="chapter-item">
                             <span class="chapter-number {badge_class}">{chapter_num}</span>
                             <span class="chapter-title">{chapter.get('title', 'Untitled')}</span>
-                            <span class="chapter-words">{chapter.get('word_count', 0):,} words</span>
+                            <span class="chapter-words">{chapter.get('word_count', 0):,} words{duration_html}</span>
+                        </div>
+                        '''
+                    
+                    # Format voice recommendations HTML
+                    voice_section_html = ""
+                    if voice_recommendations and 'error' not in voice_recommendations:
+                        language = voice_recommendations.get('detected_language', 'English')
+                        primary = voice_recommendations.get('primary_voice', {})
+                        alternatives = voice_recommendations.get('alternative_voices', [])
+                        narration_style = voice_recommendations.get('narration_style', 'conversational')
+                        
+                        voice_section_html = f'''
+                        <div class="card">
+                            <h2><span class="icon">🎤</span> Voice Recommendations</h2>
+                            <p style="color: #666; margin-bottom: 20px;">AI-recommended narrator voices for your {language} audiobook</p>
+                            
+                            <h3>Primary Recommendation</h3>
+                            <div class="voice-card">
+                                <h4>🎯 Best Match</h4>
+                                <div class="voice-details">
+                                    <div class="voice-detail"><strong>Type:</strong> {primary.get('type', 'N/A').title()}</div>
+                                    <div class="voice-detail"><strong>Age:</strong> {primary.get('age_range', 'N/A').title()}</div>
+                                    <div class="voice-detail"><strong>Tone:</strong> {primary.get('tone', 'N/A').title()}</div>
+                                    <div class="voice-detail"><strong>Accent:</strong> {primary.get('accent', 'N/A')}</div>
+                                </div>
+                                <div class="voice-reasoning">
+                                    💡 {primary.get('reasoning', 'No reasoning provided')}
+                                </div>
+                            </div>
+                            
+                            <h3>Alternative Options</h3>
+                        '''
+                        
+                        for i, alt in enumerate(alternatives[:2], 1):
+                            voice_section_html += f'''
+                            <div class="voice-card">
+                                <h4>Option {i}</h4>
+                                <div class="voice-details">
+                                    <div class="voice-detail"><strong>Type:</strong> {alt.get('type', 'N/A').title()}</div>
+                                    <div class="voice-detail"><strong>Age:</strong> {alt.get('age_range', 'N/A').title()}</div>
+                                    <div class="voice-detail"><strong>Tone:</strong> {alt.get('tone', 'N/A').title()}</div>
+                                    <div class="voice-detail"><strong>Accent:</strong> {alt.get('accent', 'N/A')}</div>
+                                </div>
+                                <div class="voice-reasoning">
+                                    💡 {alt.get('reasoning', 'No reasoning provided')}
+                                </div>
+                            </div>
+                            '''
+                        
+                        voice_section_html += f'''
+                            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <strong>📖 Recommended Narration Style:</strong> {narration_style.title()}
+                            </div>
                         </div>
                         '''
                     
@@ -247,6 +309,7 @@ def view_session(session_id):
                     # Replace template variables
                     html = html_template.replace('{{session_id}}', session_id)
                     html = html.replace('{{processing_date}}', processing_date)
+                    html = html.replace('{{language}}', voice_recommendations.get('detected_language', 'English'))
                     html = html.replace('{{title}}', metadata.get('title', 'Unknown Title'))
                     html = html.replace('{{author}}', metadata.get('author', 'Unknown Author'))
                     html = html.replace('{{genre}}', metadata.get('genre', 'Unknown'))
@@ -254,7 +317,9 @@ def view_session(session_id):
                     html = html.replace('{{word_count}}', f"{validation.get('word_count', 0):,}")
                     html = html.replace('{{page_count}}', str(validation.get('estimated_pages', 0)))
                     html = html.replace('{{character_count}}', f"{validation.get('character_count', 0):,}")
+                    html = html.replace('{{estimated_duration}}', estimated_duration)
                     html = html.replace('{{chapters}}', chapters_html)
+                    html = html.replace('{{voice_recommendations_section}}', voice_section_html)
                     html = html.replace('{{folders}}', folders_html)
                     
                     return html

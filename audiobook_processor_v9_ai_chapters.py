@@ -372,6 +372,151 @@ class AIBookProcessor:
         print(f"✅ Split into {len(split_chapters)} chapter files")
         return split_chapters
     
+    def prepare_narration_text(self, split_chapters):
+        """Prepare narration-ready text for each chapter"""
+        if not self.enable_narration_prep:
+            print("⏭️  Narration prep disabled")
+            return []
+        
+        print("\n📝 Preparing narration-ready text...")
+        narration_chapters = []
+        
+        for chapter in split_chapters:
+            # Read chapter file
+            chapter_path = os.path.join(self.folders["05_chapter_splits"], chapter["file"])
+            with open(chapter_path, 'r', encoding='utf-8') as f:
+                text = f.read()
+            
+            # Clean text for narration
+            narration_text = self.clean_for_narration(text, chapter["title"])
+            
+            # Save narration-ready file
+            narration_filename = f"narration_{chapter['file']}"
+            narration_path = os.path.join(self.folders["06_narration_prep"], narration_filename)
+            with open(narration_path, 'w', encoding='utf-8') as f:
+                f.write(narration_text)
+            
+            narration_chapters.append({
+                "number": chapter["number"],
+                "title": chapter["title"],
+                "file": narration_filename,
+                "word_count": len(narration_text.split()),
+                "estimated_duration_minutes": len(narration_text.split()) / 150  # ~150 words per minute
+            })
+        
+        print(f"✅ Prepared {len(narration_chapters)} narration files")
+        return narration_chapters
+    
+    def clean_for_narration(self, text, chapter_title):
+        """Clean text for natural narration"""
+        # Add chapter announcement at the beginning
+        narration_text = f"{chapter_title}\n\n{text}"
+        
+        # Remove excessive whitespace
+        narration_text = re.sub(r'\n{3,}', '\n\n', narration_text)
+        narration_text = re.sub(r' {2,}', ' ', narration_text)
+        
+        # Expand common abbreviations for better narration
+        abbreviations = {
+            r'\bMr\.': 'Mister',
+            r'\bMrs\.': 'Missus',
+            r'\bDr\.': 'Doctor',
+            r'\bProf\.': 'Professor',
+            r'\bSt\.': 'Saint',
+            r'\betc\.': 'etcetera',
+        }
+        
+        for abbr, expansion in abbreviations.items():
+            narration_text = re.sub(abbr, expansion, narration_text)
+        
+        return narration_text.strip()
+    
+    def recommend_voices(self, metadata, split_chapters):
+        """Recommend ElevenLabs voices based on book metadata"""
+        if not self.enable_voice_recommendations:
+            print("⏭️  Voice recommendations disabled")
+            return {}
+        
+        print("\n🎤 Generating voice recommendations...")
+        
+        # Detect language
+        try:
+            from language_detector import LanguageDetector
+            detector = LanguageDetector()
+            
+            # Get sample text from first chapter
+            first_chapter_path = os.path.join(self.folders["05_chapter_splits"], split_chapters[0]["file"])
+            with open(first_chapter_path, 'r', encoding='utf-8') as f:
+                sample_text = f.read()[:1000]  # First 1000 chars
+            
+            language_info = detector.detect_language(sample_text)
+            language = language_info.get('language', 'English')
+            language_code = language_info.get('code', 'en')
+        except Exception as e:
+            print(f"⚠️  Language detection failed: {e}")
+            language = "English"
+            language_code = "en"
+        
+        # Use AI to recommend voices
+        try:
+            client = OpenAI()
+            
+            prompt = f"""Based on this book information, recommend 3 suitable narrator voice types:
+
+Title: {metadata.get('title', 'Unknown')}
+Author: {metadata.get('author', 'Unknown')}
+Genre: {metadata.get('genre', 'Unknown')}
+Language: {language}
+Chapters: {len(split_chapters)}
+
+Provide recommendations in this JSON format:
+{{
+  "primary_voice": {{
+    "type": "male/female/neutral",
+    "age_range": "young/middle-aged/mature",
+    "tone": "warm/authoritative/energetic/calm",
+    "accent": "American/British/Neutral",
+    "reasoning": "why this voice fits"
+  }},
+  "alternative_voices": [
+    {{
+      "type": "...",
+      "age_range": "...",
+      "tone": "...",
+      "accent": "...",
+      "reasoning": "..."
+    }}
+  ],
+  "narration_style": "dramatic/conversational/documentary/storytelling"
+}}"""
+            
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"},
+                temperature=0.7
+            )
+            
+            voice_recommendations = json.loads(response.choices[0].message.content)
+            voice_recommendations["detected_language"] = language
+            voice_recommendations["language_code"] = language_code
+            
+            # Save recommendations
+            recommendations_path = os.path.join(self.folders["07_voice_samples"], "voice_recommendations.json")
+            with open(recommendations_path, 'w', encoding='utf-8') as f:
+                json.dump(voice_recommendations, f, indent=2)
+            
+            print(f"✅ Voice recommendations generated ({language})")
+            return voice_recommendations
+            
+        except Exception as e:
+            print(f"⚠️  Voice recommendation failed: {e}")
+            return {
+                "detected_language": language,
+                "language_code": language_code,
+                "error": str(e)
+            }
+    
     def process_book(self):
         """Main processing pipeline"""
         print("\n" + "="*70)
@@ -394,6 +539,25 @@ class AIBookProcessor:
             # Step 5: Split into chapters
             split_chapters = self.split_into_chapters(text, chapter_data)
             
+            # Step 6: Prepare narration text (if enabled)
+            narration_chapters = self.prepare_narration_text(split_chapters)
+            
+            # Step 7: Recommend voices (if enabled)
+            voice_recommendations = self.recommend_voices(metadata, split_chapters)
+            
+            # Calculate total estimated audiobook duration
+            if narration_chapters:
+                total_duration = sum(ch.get('estimated_duration_minutes', 0) for ch in narration_chapters)
+                hours = int(total_duration // 60)
+                minutes = int(total_duration % 60)
+                estimated_duration = f"{hours}h {minutes}m"
+            else:
+                total_words = validation_results['word_count']
+                total_minutes = total_words / 150
+                hours = int(total_minutes // 60)
+                minutes = int(total_minutes % 60)
+                estimated_duration = f"{hours}h {minutes}m"
+            
             # Build final result
             result = {
                 "success": True,
@@ -402,6 +566,9 @@ class AIBookProcessor:
                 "metadata": metadata,
                 "validation": validation_results,
                 "chapters": split_chapters,
+                "narration_chapters": narration_chapters,
+                "voice_recommendations": voice_recommendations,
+                "estimated_duration": estimated_duration,
                 "folder_structure": self.folders
             }
             
