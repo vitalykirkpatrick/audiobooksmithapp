@@ -183,19 +183,19 @@ def view_session(session_id):
     try:
         # Find session directory
         for root, dirs, files in os.walk(WORKING_DIR):
-            if session_id in root and "processing_sessions" in root:
-                session_dir = os.path.join(root, session_id)
-                if os.path.exists(session_dir):
-                    report_path = os.path.join(session_dir, "10_delivery_package", "processing_report.json")
-                    if os.path.exists(report_path):
-                        import json
-                        with open(report_path, 'r') as f:
-                            report = json.load(f)
-                        return jsonify({
-                            "success": True,
-                            "session_id": session_id,
-                            "report": report
-                        })
+            # Check if this root path ends with the session_id and contains processing_sessions
+            if root.endswith(session_id) and "processing_sessions" in root:
+                # root already points to the session directory
+                report_path = os.path.join(root, "10_delivery_package", "processing_report.json")
+                if os.path.exists(report_path):
+                    import json
+                    with open(report_path, 'r') as f:
+                        report = json.load(f)
+                    return jsonify({
+                        "success": True,
+                        "session_id": session_id,
+                        "report": report
+                    })
         
         return jsonify({
             "success": False,
