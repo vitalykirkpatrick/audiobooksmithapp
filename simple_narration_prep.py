@@ -95,13 +95,43 @@ Transform the raw chapter text below into a narration-ready script following the
      * If Spanish: "José" (not "Jose"), "Málaga" (not "Malaga")
    - This ensures AI narrator uses correct native pronunciation
 
-3. **Content:**
+3. **Unit Conversions (for US audiences):**
+   - Convert metric units to US equivalents in parentheses:
+     * "5 kilometers" → "5 kilometers (about 3 miles)"
+     * "100 kilograms" → "100 kilograms (about 220 pounds)"
+     * "30 degrees Celsius" → "30 degrees Celsius (86 degrees Fahrenheit)"
+     * "2 meters" → "2 meters (about 6.5 feet)"
+   - Add context for foreign currency:
+     * "100 rubles" → "100 rubles (approximately X dollars at the time)"
+     * "50 pounds sterling" → "50 pounds sterling (about X dollars)"
+   - Only add conversions when the measurement is significant to the story
+
+4. **Abbreviation Expansion:**
+   - Expand ALL abbreviations for clarity:
+     * "Dr." → "Doctor"
+     * "Mr." → "Mister"
+     * "Mrs." → "Missus"
+     * "Ms." → "Miss" or "Miz"
+     * "etc." → "et cetera"
+     * "e.g." → "for example"
+     * "i.e." → "that is"
+     * "vs." → "versus"
+     * "St." → "Street" or "Saint" (context-dependent)
+   - Spell out acronyms on first use:
+     * "USSR" → "U.S.S.R." or "the Soviet Union"
+     * "USA" → "U.S.A." or "the United States"
+     * "UK" → "U.K." or "the United Kingdom"
+   - Expand time abbreviations:
+     * "a.m." → "A.M."
+     * "p.m." → "P.M."
+
+5. **Content:**
    - Include the COMPLETE chapter text with NO omissions or summaries
    - Preserve all paragraphs, dialogue, and narrative flow
-   - Add `<break time="0.3s" />` between paragraphs for natural pacing
-   - NO page numbers, headers, or artifacts
+   - Add `<break time="0.3s" />` between paragraphs
+   - Remove page numbers, headers, footers, and any publishing artifacts
 
-4. **Closing Transition:**
+6. **Closing Transition:**
    - Add `<break time="2s" />`
    - State: "We've now come to the end of [Chapter Name]."
    - Add: "Let us continue this journey together."
