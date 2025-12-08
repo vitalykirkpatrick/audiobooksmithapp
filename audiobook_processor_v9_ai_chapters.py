@@ -27,13 +27,21 @@ class AIBookProcessor:
     def __init__(self, book_path, project_id, user_email="unknown@example.com", 
                  working_dir="/root/audiobook_working", 
                  enable_narration_prep=False,
-                 enable_voice_recommendations=False):
+                 enable_voice_recommendations=False,
+                 openai_api_key=None,
+                 openai_org_id=None):
         self.book_path = book_path
         self.project_id = project_id
         self.user_email = user_email
         self.working_dir = working_dir
         self.enable_narration_prep = enable_narration_prep
         self.enable_voice_recommendations = enable_voice_recommendations
+        
+        # Set OpenAI credentials if provided
+        if openai_api_key:
+            os.environ['OPENAI_API_KEY'] = openai_api_key
+        if openai_org_id:
+            os.environ['OPENAI_ORG_ID'] = openai_org_id
         
         # Create session-based folder structure
         self.session_id = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
@@ -226,11 +234,25 @@ class AIBookProcessor:
         """Detect chapters using AI to eliminate false positives"""
         print("🤖 Detecting chapters with AI...")
         
+        # Skip table of contents by finding where actual content starts
+        # Look for "Prologue" followed by actual paragraph text (not just page numbers)
+        prologue_pattern = r'Prologue\s+[A-Z][a-z]'
+        prologue_match = re.search(prologue_pattern, text)
+        
+        if prologue_match:
+            # Start analysis from the prologue onwards (skip TOC)
+            text_to_analyze = text[prologue_match.start():]
+            print(f"  ✅ Skipped {prologue_match.start()} characters (TOC section)")
+        else:
+            # If no prologue found, skip first 10,000 chars as fallback
+            text_to_analyze = text[10000:] if len(text) > 10000 else text
+            print(f"  ⚠️  No prologue found, skipped first 10,000 chars")
+        
         # Split text into chunks for analysis
         max_chunk_size = 50000  # Characters per chunk
         chunks = []
-        for i in range(0, len(text), max_chunk_size):
-            chunks.append(text[i:i + max_chunk_size])
+        for i in range(0, len(text_to_analyze), max_chunk_size):
+            chunks.append(text_to_analyze[i:i + max_chunk_size])
         
         all_chapters = []
         

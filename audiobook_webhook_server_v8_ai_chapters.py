@@ -100,13 +100,19 @@ def upload_book():
         
         from audiobook_processor_v9_ai_chapters import AIBookProcessor
         
+        # OpenAI credentials from environment
+        OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+        OPENAI_ORG_ID = os.environ.get('OPENAI_ORG_ID')
+        
         processor = AIBookProcessor(
             book_path=file_path,
             project_id=safe_filename,
             user_email=email,
             working_dir=WORKING_DIR,
-            enable_narration_prep=True,  # Enabled
-            enable_voice_recommendations=True  # Enabled
+            enable_narration_prep=True,
+            enable_voice_recommendations=True,
+            openai_api_key=OPENAI_API_KEY,
+            openai_org_id=OPENAI_ORG_ID
         )
         
         result = processor.process_book()
