@@ -89,7 +89,18 @@ fi
 # Check Flask
 if ! $PYTHON_CMD -c "import flask" 2>/dev/null; then
     echo -e "${YELLOW}⚠️  Flask not found, installing...${NC}"
-    pip3 install flask --ignore-installed blinker || pip3 install flask --break-system-packages
+    # Install Flask without upgrading blinker to avoid distutils conflict
+    pip3 install 'flask<3.1' 'werkzeug>=3.0' --no-deps 2>/dev/null || true
+    pip3 install flask 2>/dev/null || pip3 install --break-system-packages flask 2>/dev/null || true
+    
+    # Verify Flask is available
+    if $PYTHON_CMD -c "import flask" 2>/dev/null; then
+        echo -e "${GREEN}✅ Flask installed${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Flask installation had issues, but continuing...${NC}"
+    fi
+else
+    echo -e "${GREEN}✅ Flask already installed${NC}"
 fi
 
 echo -e "${GREEN}✅ Prerequisites checked${NC}"
