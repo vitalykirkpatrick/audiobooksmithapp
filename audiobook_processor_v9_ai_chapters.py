@@ -285,16 +285,48 @@ class AIBookProcessor:
             print("⚠️ AI detection found no chapters, using fallback regex...")
             all_chapters = self._fallback_chapter_detection(text)
         
-        # Find positions of chapters in text
+        # Find positions of chapters in the body text (text_to_analyze, not full text)
         chapter_data = []
         for chapter_title in all_chapters:
-            # Find the position of this chapter in the text
+            # Try multiple matching strategies
+            match = None
+            
+            # Strategy 1: Exact match in body text
             pattern = re.escape(chapter_title)
-            match = re.search(pattern, text, re.IGNORECASE)
+            match = re.search(pattern, text_to_analyze, re.IGNORECASE)
+            
+            # Strategy 2: If no match, try matching just the core title without numbers/prefixes
+            if not match:
+                # Remove common prefixes like "Chapter 1:", "1.", etc.
+                core_title = re.sub(r'^(Chapter\s+\d+[:\s]+|\d+[.\s]+)', '', chapter_title, flags=re.IGNORECASE).strip()
+                if core_title:
+                    pattern = re.escape(core_title)
+                    match = re.search(pattern, text_to_analyze, re.IGNORECASE)
+            
+            # Strategy 3: Look for chapter number patterns followed by title
+            if not match and 'chapter' in chapter_title.lower():
+                # Extract chapter number
+                num_match = re.search(r'\d+', chapter_title)
+                if num_match:
+                    chapter_num = num_match.group()
+                    # Look for patterns like "Chapter 1", "CHAPTER 1", "1.", etc.
+                    patterns = [
+                        rf'Chapter\s+{chapter_num}[:\s]',
+                        rf'CHAPTER\s+{chapter_num}[:\s]',
+                        rf'^{chapter_num}[.\s]+',
+                    ]
+                    for p in patterns:
+                        match = re.search(p, text_to_analyze, re.MULTILINE)
+                        if match:
+                            break
+            
             if match:
+                # Calculate actual position in original text
+                # Need to account for the offset if we skipped TOC
+                offset = len(text) - len(text_to_analyze)
                 chapter_data.append({
                     "title": chapter_title,
-                    "position": match.start()
+                    "position": match.start() + offset
                 })
         
         # Sort by position
@@ -375,6 +407,13 @@ class AIBookProcessor:
             end_pos = chapter_data[i + 1]["position"] if i + 1 < len(chapter_data) else len(text)
             chapter_text = text[start_pos:end_pos].strip()
             
+            # Calculate word count
+            word_count = len(chapter_text.split())
+            
+            # Validate chapter has reasonable content
+            if word_count < 100 and i < len(chapter_data) - 1:
+                print(f"  ⚠️  Chapter '{chapter['title']}' has only {word_count} words - might be misdetected")
+            
             # Save chapter file
             chapter_num = chapter["number"]
             safe_title = self.sanitize_folder_name(chapter["title"])
@@ -388,8 +427,10 @@ class AIBookProcessor:
                 "number": chapter_num,
                 "title": chapter["title"],
                 "file": filename,
-                "word_count": len(chapter_text.split())
+                "word_count": word_count
             })
+            
+            print(f"  ✅ Chapter {chapter_num}: {chapter['title'][:50]}... ({word_count} words)")
         
         print(f"✅ Split into {len(split_chapters)} chapter files")
         return split_chapters
