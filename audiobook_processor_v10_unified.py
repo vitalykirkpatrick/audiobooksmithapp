@@ -305,114 +305,50 @@ Return ONLY a JSON object:
     
     
     def ai_detect_chapters(self, text):
-        """Detect chapters using hybrid AI + regex with chunked analysis"""
-        print(f"[4/7] Detecting chapters with hybrid AI + regex approach...")
+        """Detect chapters using simple reliable regex patterns"""
+        print("[2/7] Detecting chapters with simple regex...")
         
-        # Skip TOC section
-        toc_skip_chars = min(10000, len(text) // 10)
-        text_to_analyze = text[toc_skip_chars:]
+        chapters = []
         
-        all_chapters = []
+        # Pattern 1: Prologue
+        for match in re.finditer(r'^(Prologue|PROLOGUE)\s*$', text, re.MULTILINE):
+            chapters.append((match.start(), "Prologue"))
         
-        # Method 1: AI Detection on multiple chunks
-        print("📊 Method 1: AI detection on chunks...")
-        chunk_size = 50000
-        num_chunks = min(5, (len(text_to_analyze) // chunk_size) + 1)
+        # Pattern 2: Part markers (I The Beginning, II Foster Care, III Into Adulthood)
+        for match in re.finditer(r'^([IVX]+)\s+([A-Z][^\n]{5,40})$', text, re.MULTILINE):
+            roman = match.group(1)
+            title = match.group(2).strip()
+            chapters.append((match.start(), f"{roman} {title}"))
         
-        for i in range(num_chunks):
-            start = i * chunk_size
-            end = start + chunk_size
-            chunk = text_to_analyze[start:end]
-            
-            if not chunk.strip():
+        # Pattern 3: Numbered chapters with titles on next line
+        for match in re.finditer(r'^(\d+)\s*\n\s*([A-Z][^\n]{5,50})$', text, re.MULTILINE):
+            num = match.group(1)
+            title = match.group(2).strip()
+            chapters.append((match.start(), f"{num} {title}"))
+        
+        # Pattern 4: Epilogue
+        for match in re.finditer(r'^(Epilogue|EPILOGUE)\s*$', text, re.MULTILINE):
+            chapters.append((match.start(), "Epilogue"))
+        
+        # Sort by position
+        chapters.sort(key=lambda x: x[0])
+        
+        # Remove duplicates within 500 characters
+        filtered = []
+        for i, (pos, title) in enumerate(chapters):
+            if i > 0 and pos - filtered[-1][0] < 500:
+                print(f"  ⚠️ Skipping duplicate '{title}' at pos {pos}")
                 continue
-            
-            try:
-                prompt = f"""Find ALL chapter headings in this text. Return ONLY chapter titles as JSON array.
-
-Text section {i+1}/{num_chunks}:
-{chunk[:20000]}
-
-Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
-                
-                response = self.client.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {"role": "system", "content": "Extract chapter headings only. Ignore TOC, page numbers, headers."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.1,
-                    response_format={"type": "json_object"}
-                )
-                
-                result = json.loads(response.choices[0].message.content)
-                chunk_chapters = result.get('chapters', [])
-                all_chapters.extend(chunk_chapters)
-                print(f"  Chunk {i+1}: Found {len(chunk_chapters)} chapters")
-                
-            except Exception as e:
-                print(f"  ⚠️ Chunk {i+1} AI detection failed: {e}")
+            filtered.append((pos, title))
         
-        # Method 2: Regex fallback
-        print("📊 Method 2: Regex pattern matching...")
-        regex_chapters = []
+        print(f"✅ Detected {len(filtered)} chapters")
         
-        # Pattern 1: "Chapter N" - must be followed by newline or colon (not in running header)
-        for match in re.finditer(r'^(Chapter|CHAPTER)\s+(\d+|One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\s*[:\n]', text_to_analyze, re.MULTILINE):
-            title = match.group(0).strip().rstrip(':')
-            if title not in regex_chapters:
-                regex_chapters.append(title)
-        
-        # Pattern 2: Numbered titles - must have substantial following text (not just a header)
-        for match in re.finditer(r'^(\d+)\s+([A-Z][a-z][^\n]{10,80})\s*$', text_to_analyze, re.MULTILINE):
-            title = match.group(0).strip()
-            # Check if followed by paragraph text (not another header)
-            pos = match.end()
-            following_text = text_to_analyze[pos:pos+200]
-            # Skip if it's all caps (likely a running header)
-            if title.isupper():
-                continue
-            # Skip if followed immediately by another number (page sequence)
-            if re.match(r'^\s*\d+\s+[A-Z]', following_text):
-                continue
-            if title not in regex_chapters:
-                regex_chapters.append(title)
-        
-        # Pattern 3: Prologue/Epilogue - must be on its own line
-        for match in re.finditer(r'^(Prologue|PROLOGUE|Epilogue|EPILOGUE)\s*$', text_to_analyze, re.MULTILINE):
-            title = match.group(0).strip()
-            if title not in regex_chapters:
-                regex_chapters.append(title)
-        
-        print(f"  Regex: Found {len(regex_chapters)} potential chapters")
-        
-        # Combine and deduplicate
-        combined_chapters = list(dict.fromkeys(all_chapters + regex_chapters))
-        print(f"✅ Combined total: {len(combined_chapters)} unique chapters")
-        
-        # Filter out obvious false positives (but keep legitimate duplicates)
-        filtered_chapters = []
-        for ch in combined_chapters:
-            # Skip very short titles (likely page numbers)
-            if len(ch) < 5:
-                continue
-            # Skip if it's just a number
-            if ch.strip().isdigit():
-                continue
-            # Skip if it's all caps and very short (page header)
-            if ch.isupper() and len(ch) < 15:
-                continue
-            filtered_chapters.append(ch)
-        
-        print(f"📊 After filtering: {len(filtered_chapters)} chapters")
-        combined_chapters = filtered_chapters
-        
-        # Find positions
-        chapter_data = self._find_chapter_positions(text, [{"title": ch} for ch in combined_chapters])
+        # Find positions and create chapter data
+        chapter_data = self._find_chapter_positions(text, [{"title": ch[1]} for ch in filtered])
         
         # Build structure
-        has_prologue = any('prologue' in ch.get('title', '').lower() for ch in chapter_data)
-        has_epilogue = any('epilogue' in ch.get('title', '').lower() for ch in chapter_data)
+        has_prologue = any("prologue" in ch.get("title", "").lower() for ch in chapter_data)
+        has_epilogue = any("epilogue" in ch.get("title", "").lower() for ch in chapter_data)
         
         structure = {
             "total_chapters": len(chapter_data),
@@ -422,10 +358,7 @@ Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
             "structure_type": "chapters" if chapter_data else "unknown"
         }
         
-        print(f"✅ Final: Detected {len(chapter_data)} chapters with positions")
         return structure
-
-
 
 
     def _find_chapter_positions(self, text, chapter_titles):
