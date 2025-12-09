@@ -12,6 +12,7 @@ import json
 import PyPDF2
 from datetime import datetime
 from openai import OpenAI
+from proper_chapter_splitter import ProperChapterSplitter
 
 # Import voice recommender
 import sys
@@ -512,7 +513,18 @@ Return ONLY a JSON object:
             
             # Step 5: Detect chapters (50-60%)
             tracker.update(50, "Detecting Chapters", "AI analyzing book structure...", eta_seconds=25)
-            chapter_structure = self.ai_detect_chapters(text)
+            # Use proper chapter splitter instead of old AI detection
+            splitter = ProperChapterSplitter(
+                openai_api_key=os.environ.get('OPENAI_API_KEY'),
+                openai_org_id=os.environ.get('OPENAI_ORG_ID')
+            )
+            chapter_files = splitter.process_book(text, chapter_splits_dir)
+            
+            # Convert to format expected by rest of processor
+            chapter_structure = {
+                'chapters': [{'number': f['number'], 'title': f['title']} for f in chapter_files],
+                'total_chapters': len(chapter_files)
+            }
             
             # Merge metadata with validation
             book_info = {
