@@ -357,21 +357,30 @@ Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
         print("📊 Method 2: Regex pattern matching...")
         regex_chapters = []
         
-        # Pattern 1: "Chapter N"
-        for match in re.finditer(r'\b(Chapter|CHAPTER)\s+(\d+|One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\b', text_to_analyze):
-            title = match.group(0)
+        # Pattern 1: "Chapter N" - must be followed by newline or colon (not in running header)
+        for match in re.finditer(r'^(Chapter|CHAPTER)\s+(\d+|One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\s*[:\n]', text_to_analyze, re.MULTILINE):
+            title = match.group(0).strip().rstrip(':')
             if title not in regex_chapters:
                 regex_chapters.append(title)
         
-        # Pattern 2: Numbered titles
-        for match in re.finditer(r'^(\d+)[.\s]+([A-Z][^\n]{5,50})$', text_to_analyze, re.MULTILINE):
+        # Pattern 2: Numbered titles - must have substantial following text (not just a header)
+        for match in re.finditer(r'^(\d+)\s+([A-Z][a-z][^\n]{10,80})\s*$', text_to_analyze, re.MULTILINE):
             title = match.group(0).strip()
-            if title not in regex_chapters and len(title) > 3:
+            # Check if followed by paragraph text (not another header)
+            pos = match.end()
+            following_text = text_to_analyze[pos:pos+200]
+            # Skip if it's all caps (likely a running header)
+            if title.isupper():
+                continue
+            # Skip if followed immediately by another number (page sequence)
+            if re.match(r'^\s*\d+\s+[A-Z]', following_text):
+                continue
+            if title not in regex_chapters:
                 regex_chapters.append(title)
         
-        # Pattern 3: Prologue/Epilogue
-        for match in re.finditer(r'\b(Prologue|PROLOGUE|Epilogue|EPILOGUE)\b', text_to_analyze):
-            title = match.group(0)
+        # Pattern 3: Prologue/Epilogue - must be on its own line
+        for match in re.finditer(r'^(Prologue|PROLOGUE|Epilogue|EPILOGUE)\s*$', text_to_analyze, re.MULTILINE):
+            title = match.group(0).strip()
             if title not in regex_chapters:
                 regex_chapters.append(title)
         
@@ -380,6 +389,26 @@ Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
         # Combine and deduplicate
         combined_chapters = list(dict.fromkeys(all_chapters + regex_chapters))
         print(f"✅ Combined total: {len(combined_chapters)} unique chapters")
+        
+        # Filter out obvious false positives
+        filtered_chapters = []
+        seen_titles = set()
+        for ch in combined_chapters:
+            # Skip very short titles (likely page numbers)
+            if len(ch) < 5:
+                continue
+            # Skip if it's just a number
+            if ch.strip().isdigit():
+                continue
+            # Skip repeated book titles in headers
+            title_lower = ch.lower()
+            if title_lower in seen_titles:
+                continue
+            seen_titles.add(title_lower)
+            filtered_chapters.append(ch)
+        
+        print(f"📊 After filtering: {len(filtered_chapters)} chapters")
+        combined_chapters = filtered_chapters
         
         # Find positions
         chapter_data = self._find_chapter_positions(text, [{"title": ch} for ch in combined_chapters])
