@@ -1,0 +1,13 @@
+"This has been Test Book"
+[PAUSE: 0.5 seconds]
+"Written by Test Author"
+[PAUSE: 0.5 seconds]
+"Narrated by Test Narrator"
+[PAUSE: 0.3 seconds]
+"This audiobook was created using state-of-the-art voice synthesis technology"
+[PAUSE: 0.3 seconds]
+"Copyright 2025 by Test Author"
+[PAUSE: 0.3 seconds]
+"Production copyright 2025 by Test Author"
+[PAUSE: 0.3 seconds]
+"The End"
