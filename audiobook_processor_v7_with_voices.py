@@ -5,6 +5,7 @@ AudiobookSmith Book Processor v7 - With Voice Recommendations
 - Automatic voice sample generation using book excerpt
 """
 
+from progress_tracker import ProgressTracker
 import os
 import re
 import json
@@ -245,6 +246,125 @@ Return ONLY a JSON object:
                 "estimated_genre": "Unknown"
             }
     
+    def ai_extract_metadata(self, text):
+        """Extract title, author, and detailed metadata using AI"""
+        print(f"[3/7] Extracting book metadata (title, author, themes)...")
+        
+        # Use first 5000 characters for metadata extraction
+        sample = text[:5000]
+        
+        prompt = """Analyze this book excerpt and extract key metadata.
+    
+    Book excerpt:
+    """ + sample + """
+    
+    Extract and return ONLY a JSON object with:
+    {
+        "title": "The actual book title (if found in text)",
+        "author": "The author's name (if found in text)",
+        "genre": "Specific genre (e.g., Memoir, Thriller, Romance, Self-Help)",
+        "themes": ["theme1", "theme2", "theme3"],
+        "narrative_tone": "Description of narrative voice and tone",
+        "target_audience": "Who this book is for",
+        "content_warnings": ["any sensitive content"],
+        "estimated_age_rating": "General/Teen/Adult"
+    }
+    
+    If title or author not found in text, use "Unknown"."""
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {"role": "system", "content": "You are a literary analyst. Extract metadata from book text."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.2,
+                response_format={"type": "json_object"}
+            )
+            
+            import json
+            metadata = json.loads(response.choices[0].message.content)
+            print(f"✅ Metadata extracted: {metadata.get('title')} by {metadata.get('author')}")
+            return metadata
+            
+        except Exception as e:
+            print(f"⚠️ Metadata extraction error: {e}")
+            return {
+                "title": "Unknown",
+                "author": "Unknown",
+                "genre": "Unknown",
+                "themes": [],
+                "narrative_tone": "Unknown",
+                "target_audience": "General",
+                "content_warnings": [],
+                "estimated_age_rating": "General"
+            }
+    
+    
+    def ai_detect_chapters(self, text):
+        """Detect chapters using AI analysis"""
+        print(f"[4/7] Detecting chapters and structure...")
+        
+        # Use more text for chapter detection (first 20000 chars)
+        sample = text[:20000]
+        
+        prompt = """Analyze this book text and detect all chapters.
+    
+    Book text:
+    """ + sample + """
+    
+    Detect chapter markers like:
+    - "Chapter 1", "Chapter One", "CHAPTER 1"
+    - "Part I", "Part One"
+    - "Prologue", "Epilogue"
+    - "Section 1", numbered sections
+    - Any other chapter/section markers
+    
+    Return ONLY a JSON object:
+    {
+        "total_chapters": number,
+        "chapters": [
+            {
+                "number": 1,
+                "title": "Chapter title or 'Chapter 1'",
+                "start_text": "First few words of chapter"
+            }
+        ],
+        "has_prologue": true/false,
+        "has_epilogue": true/false,
+        "structure_type": "chapters/parts/sections/mixed"
+    }
+    
+    If no clear chapters found, return total_chapters: 0 and empty chapters array."""
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {"role": "system", "content": "You are a book structure analyzer. Detect chapters and sections."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            
+            import json
+            structure = json.loads(response.choices[0].message.content)
+            total = structure.get('total_chapters', 0)
+            print(f"✅ Detected {total} chapters")
+            return structure
+            
+        except Exception as e:
+            print(f"⚠️ Chapter detection error: {e}")
+            return {
+                "total_chapters": 0,
+                "chapters": [],
+                "has_prologue": False,
+                "has_epilogue": False,
+                "structure_type": "unknown"
+            }
+    
     def recommend_voices(self, text, book_info):
         """Recommend and generate voice samples"""
         if not self.voice_recommender:
@@ -346,6 +466,9 @@ Return ONLY a JSON object:
     
     def process(self):
         """Main processing method"""
+        # Initialize progress tracker
+        tracker = ProgressTracker(self.session_id)
+        
         try:
             print(f"\n{'='*70}")
             print(f"🚀 AUDIOBOOK PROCESSING STARTED")
@@ -356,11 +479,15 @@ Return ONLY a JSON object:
             print(f"Session Path: {self.session_dir}")
             print(f"{'='*70}\n")
             
-            # Step 1: Extract text
+            # Step 1: Extract text (0-20%)
+            tracker.update(5, "Extracting Text", "Reading PDF and extracting content...", eta_seconds=15)
             text, page_count = self.extract_text_from_pdf()
+            tracker.update(20, "Text Extracted", f"Extracted {len(text.split())} words from {page_count} pages", eta_seconds=40)
             
-            # Step 2: STRICT AI validation
+            # Step 2: STRICT AI validation (20-40%)
+            tracker.update(25, "Validating Content", "AI analyzing document type and quality...", eta_seconds=35)
             validation = self.ai_validate_content(text)
+            tracker.update(40, "Content Validated", f"Verified as {validation.get('document_type', 'Book')}", eta_seconds=30)
             
             # Step 3: Word count validation
             words = text.split()
@@ -379,15 +506,34 @@ Return ONLY a JSON object:
             print(f"   Word count: {word_count:,}")
             print(f"   Pages: {page_count}")
             
-            # Step 4: Generate voice recommendations
+            # Step 4: Extract metadata (40-50%)
+            tracker.update(42, "Extracting Metadata", "AI analyzing title, author, and themes...", eta_seconds=30)
+            metadata = self.ai_extract_metadata(text)
+            
+            # Step 5: Detect chapters (50-60%)
+            tracker.update(50, "Detecting Chapters", "AI analyzing book structure...", eta_seconds=25)
+            chapter_structure = self.ai_detect_chapters(text)
+            
+            # Merge metadata with validation
             book_info = {
-                "title": f"Book_{self.project_id}",
-                "author": "Unknown",
-                "genre": validation.get('estimated_genre', 'Unknown'),
-                "document_type": validation.get('document_type', 'Book')
+                "title": metadata.get('title', 'Unknown'),
+                "author": metadata.get('author', 'Unknown'),
+                "genre": metadata.get('genre', validation.get('estimated_genre', 'Unknown')),
+                "document_type": validation.get('document_type', 'Book'),
+                "themes": metadata.get('themes', []),
+                "narrative_tone": metadata.get('narrative_tone', 'Unknown'),
+                "target_audience": metadata.get('target_audience', 'General'),
+                "content_warnings": metadata.get('content_warnings', []),
+                "age_rating": metadata.get('estimated_age_rating', 'General')
             }
             
+            # Step 6: Generate voice recommendations (60-85%)
+            tracker.update(60, "Generating Voices", "Creating AI voice recommendations...", eta_seconds=15)
             voice_recommendations = self.recommend_voices(text, book_info)
+            if voice_recommendations:
+                tracker.update(85, "Voices Generated", f"Created {len(voice_recommendations.get('recommended_voices', []))} voice samples", eta_seconds=5)
+            else:
+                tracker.update(85, "Voices Generated", "Voice recommendations ready", eta_seconds=5)
             
             # Build analysis
             analysis = {
@@ -397,11 +543,16 @@ Return ONLY a JSON object:
                 "timestamp": datetime.now().isoformat(),
                 "validation": validation,
                 "bookInfo": {
-                    "title": f"Book_{self.project_id}",
-                    "author": "Unknown",
-                    "genre": validation.get('estimated_genre', 'Unknown'),
-                    "type": validation.get('document_type', 'Book'),
-                    "language": "English"
+                    "title": book_info.get('title', 'Unknown'),
+                    "author": book_info.get('author', 'Unknown'),
+                    "genre": book_info.get('genre', 'Unknown'),
+                    "type": book_info.get('document_type', 'Book'),
+                    "language": "English",
+                    "themes": book_info.get('themes', []),
+                    "narrative_tone": book_info.get('narrative_tone', 'Unknown'),
+                    "target_audience": book_info.get('target_audience', 'General'),
+                    "content_warnings": book_info.get('content_warnings', []),
+                    "age_rating": book_info.get('age_rating', 'General')
                 },
                 "metrics": {
                     "word_count": word_count,
@@ -410,10 +561,11 @@ Return ONLY a JSON object:
                     "audio_length": f"{int(word_count / 150)}m"
                 },
                 "structure": {
-                    "total_chapters": 0,
-                    "chapters": [],
-                    "parts": [],
-                    "sections": []
+                    "total_chapters": chapter_structure.get('total_chapters', 0),
+                    "chapters": chapter_structure.get('chapters', []),
+                    "has_prologue": chapter_structure.get('has_prologue', False),
+                    "has_epilogue": chapter_structure.get('has_epilogue', False),
+                    "structure_type": chapter_structure.get('structure_type', 'unknown')
                 },
                 "recommendations": {
                     "voice_type": "Neutral, Professional",
@@ -426,7 +578,9 @@ Return ONLY a JSON object:
                 "folderStructure": self.get_folder_structure()
             }
             
-            # Save analysis
+            # Save analysis (90-100%)
+            tracker.update(90, "Finalizing", "Saving analysis results...", eta_seconds=3)
+            
             analysis_file = os.path.join(self.folders["02_structure_analysis"], "analysis.json")
             with open(analysis_file, 'w') as f:
                 json.dump(analysis, f, indent=2)
@@ -435,14 +589,18 @@ Return ONLY a JSON object:
             with open(root_analysis_file, 'w') as f:
                 json.dump(analysis, f, indent=2)
             
+            tracker.complete("Analysis complete! Your audiobook is ready.")
+            
             print(f"✅ Analysis complete! Saved to: {analysis_file}")
             print(f"{'='*70}\n")
             
             return analysis
             
-        except ContentValidationError:
+        except ContentValidationError as e:
+            tracker.error(str(e.user_message))
             raise
         except Exception as e:
+            tracker.error(f"Processing failed: {str(e)}")
             print(f"❌ Processing error: {e}")
             import traceback
             traceback.print_exc()

@@ -1,0 +1,76 @@
+    def _find_chapter_positions(self, text, chapter_titles):
+        """Find actual positions of chapter titles in text"""
+        # Skip TOC section when searching
+        toc_skip_chars = min(10000, len(text) // 10)
+        text_to_search = text[toc_skip_chars:]
+        
+        chapter_data = []
+        
+        for chapter_info in chapter_titles:
+            chapter_title = chapter_info.get('title', '')
+            if not chapter_title:
+                continue
+            
+            # Try multiple matching strategies
+            match = None
+            
+            # Strategy 1: Exact match
+            pattern = re.escape(chapter_title)
+            match = re.search(pattern, text_to_search, re.IGNORECASE)
+            
+            # Strategy 2: Try without chapter prefix
+            if not match:
+                core_title = re.sub(r'^(Chapter\s+\d+[:\s]+|\d+[.\s]+)', '', chapter_title, flags=re.IGNORECASE).strip()
+                if core_title:
+                    pattern = re.escape(core_title)
+                    match = re.search(pattern, text_to_search, re.IGNORECASE)
+            
+            # Strategy 3: Look for chapter number patterns
+            if not match and 'chapter' in chapter_title.lower():
+                num_match = re.search(r'\d+', chapter_title)
+                if num_match:
+                    chapter_num = num_match.group()
+                    patterns = [
+                        rf'Chapter\s+{chapter_num}[:\s]',
+                        rf'CHAPTER\s+{chapter_num}[:\s]',
+                        rf'^{chapter_num}[.\s]+',
+                    ]
+                    for p in patterns:
+                        match = re.search(p, text_to_search, re.MULTILINE)
+                        if match:
+                            break
+            
+            if match:
+                # Calculate actual position in original text
+                offset = toc_skip_chars
+                chapter_data.append({
+                    "title": chapter_title,
+                    "position": match.start() + offset
+                })
+        
+        # Sort by position
+        chapter_data.sort(key=lambda x: x["position"])
+        
+        # Assign smart chapter numbers
+        numbered_chapters = []
+        regular_chapter_num = 1
+        
+        for chapter in chapter_data:
+            title = chapter["title"]
+            title_lower = title.lower()
+            
+            if "prologue" in title_lower:
+                chapter_num = "00"
+            elif "epilogue" in title_lower:
+                chapter_num = "900"
+            else:
+                chapter_num = f"{regular_chapter_num:02d}"
+                regular_chapter_num += 1
+            
+            numbered_chapters.append({
+                "number": chapter_num,
+                "title": title,
+                "position": chapter["position"]
+            })
+        
+        return numbered_chapters
