@@ -430,8 +430,8 @@ Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
 
     def _find_chapter_positions(self, text, chapter_titles):
         """Find actual positions of chapter titles in text"""
-        # Skip TOC section when searching
-        toc_skip_chars = min(10000, len(text) // 10)
+        # Skip TOC section when searching (skip more to avoid TOC matches)
+        toc_skip_chars = min(50000, len(text) // 5)  # Skip first 20% or 50k chars
         text_to_search = text[toc_skip_chars:]
         
         chapter_data = []
@@ -473,10 +473,22 @@ Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
             if match:
                 # Calculate actual position in original text
                 offset = toc_skip_chars
-                chapter_data.append({
-                    "title": chapter_title,
-                    "position": match.start() + offset
-                })
+                position = match.start() + offset
+                
+                # Validate this isn't a TOC/header match by checking surrounding text
+                # Real chapters should have substantial text after them
+                preview_end = min(position + 500, len(text))
+                preview_text = text[position:preview_end]
+                preview_words = len(preview_text.split())
+                
+                # Only add if there's substantial content after this position
+                if preview_words > 50:  # At least 50 words after chapter marker
+                    chapter_data.append({
+                        "title": chapter_title,
+                        "position": position
+                    })
+                else:
+                    print(f"  ⚠️  Skipping '{chapter_title}' at pos {position} - only {preview_words} words follow (likely TOC/header)")
         
         # Sort by position
         chapter_data.sort(key=lambda x: x["position"])
