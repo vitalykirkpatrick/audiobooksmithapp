@@ -13,6 +13,7 @@ import re
 import json
 import PyPDF2
 from datetime import datetime
+from proper_chapter_splitter import ProperChapterSplitter
 from openai import OpenAI
 
 # Import voice recommender
