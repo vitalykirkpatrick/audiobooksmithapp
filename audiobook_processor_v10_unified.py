@@ -305,77 +305,100 @@ Return ONLY a JSON object:
     
     
     def ai_detect_chapters(self, text):
-        """Detect chapters using AI analysis with position tracking"""
-        print(f"[4/7] Detecting chapters and structure...")
+    def ai_detect_chapters(self, text):
+        """Detect chapters using hybrid AI + regex with chunked analysis"""
+        print(f"[4/7] Detecting chapters with hybrid AI + regex approach...")
         
-        # Skip table of contents by analyzing from 10000 chars onwards
+        # Skip TOC section
         toc_skip_chars = min(10000, len(text) // 10)
-        text_to_analyze = text[toc_skip_chars:toc_skip_chars + 30000]
+        text_to_analyze = text[toc_skip_chars:]
         
-        prompt = f"""Analyze this book text and detect ALL actual chapter headings in the BODY TEXT (not table of contents).
-
-IMPORTANT: Only detect chapter markers that appear in the actual body text, NOT in any table of contents.
-
-Book text excerpt:
-{text_to_analyze[:15000]}
-
-Detect chapter markers like:
-- "Chapter 1", "Chapter One", "CHAPTER 1"
-- "Part I", "Part One"
-- "Prologue", "Epilogue"
-- Numbered chapter titles like "1 Once Upon a Time"
-- Any other chapter/section markers
-
-Return ONLY a JSON object:
-{{
-    "total_chapters": number,
-    "chapters": [
-        {{
-            "title": "Exact chapter heading as it appears"
-        }}
-    ],
-    "has_prologue": true/false,
-    "has_epilogue": true/false,
-    "structure_type": "chapters/parts/sections/mixed"
-}}
-
-If no clear chapters found, return total_chapters: 0 and empty chapters array."""
+        all_chapters = []
         
-        try:
-            response = self.client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {"role": "system", "content": "You are a book structure analyzer. Detect chapter headings in body text only, ignoring table of contents."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
+        # Method 1: AI Detection on multiple chunks
+        print("📊 Method 1: AI detection on chunks...")
+        chunk_size = 50000
+        num_chunks = min(5, (len(text_to_analyze) // chunk_size) + 1)
+        
+        for i in range(num_chunks):
+            start = i * chunk_size
+            end = start + chunk_size
+            chunk = text_to_analyze[start:end]
             
-            structure = json.loads(response.choices[0].message.content)
-            chapters = structure.get('chapters', [])
+            if not chunk.strip():
+                continue
             
-            # Now find actual positions of these chapters in the full text
-            chapter_data = self._find_chapter_positions(text, chapters)
-            
-            # Update structure with positioned chapters
-            structure['chapters'] = chapter_data
-            structure['total_chapters'] = len(chapter_data)
-            
-            print(f"✅ Detected {len(chapter_data)} chapters with positions")
-            return structure
-            
-        except Exception as e:
-            print(f"⚠️ Chapter detection error: {e}")
-            import traceback
-            traceback.print_exc()
-            return {
-                "total_chapters": 0,
-                "chapters": [],
-                "has_prologue": False,
-                "has_epilogue": False,
-                "structure_type": "unknown"
-            }
+            try:
+                prompt = f"""Find ALL chapter headings in this text. Return ONLY chapter titles as JSON array.
+
+Text section {i+1}/{num_chunks}:
+{chunk[:20000]}
+
+Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
+                
+                response = self.client.chat.completions.create(
+                    model="gpt-4.1-mini",
+                    messages=[
+                        {"role": "system", "content": "Extract chapter headings only. Ignore TOC, page numbers, headers."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.1,
+                    response_format={"type": "json_object"}
+                )
+                
+                result = json.loads(response.choices[0].message.content)
+                chunk_chapters = result.get('chapters', [])
+                all_chapters.extend(chunk_chapters)
+                print(f"  Chunk {i+1}: Found {len(chunk_chapters)} chapters")
+                
+            except Exception as e:
+                print(f"  ⚠️ Chunk {i+1} AI detection failed: {e}")
+        
+        # Method 2: Regex fallback
+        print("📊 Method 2: Regex pattern matching...")
+        regex_chapters = []
+        
+        # Pattern 1: "Chapter N"
+        for match in re.finditer(r'\b(Chapter|CHAPTER)\s+(\d+|One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\b', text_to_analyze):
+            title = match.group(0)
+            if title not in regex_chapters:
+                regex_chapters.append(title)
+        
+        # Pattern 2: Numbered titles
+        for match in re.finditer(r'^(\d+)[.\s]+([A-Z][^\n]{5,50})$', text_to_analyze, re.MULTILINE):
+            title = match.group(0).strip()
+            if title not in regex_chapters and len(title) > 3:
+                regex_chapters.append(title)
+        
+        # Pattern 3: Prologue/Epilogue
+        for match in re.finditer(r'\b(Prologue|PROLOGUE|Epilogue|EPILOGUE)\b', text_to_analyze):
+            title = match.group(0)
+            if title not in regex_chapters:
+                regex_chapters.append(title)
+        
+        print(f"  Regex: Found {len(regex_chapters)} potential chapters")
+        
+        # Combine and deduplicate
+        combined_chapters = list(dict.fromkeys(all_chapters + regex_chapters))
+        print(f"✅ Combined total: {len(combined_chapters)} unique chapters")
+        
+        # Find positions
+        chapter_data = self._find_chapter_positions(text, [{"title": ch} for ch in combined_chapters])
+        
+        # Build structure
+        has_prologue = any('prologue' in ch.get('title', '').lower() for ch in chapter_data)
+        has_epilogue = any('epilogue' in ch.get('title', '').lower() for ch in chapter_data)
+        
+        structure = {
+            "total_chapters": len(chapter_data),
+            "chapters": chapter_data,
+            "has_prologue": has_prologue,
+            "has_epilogue": has_epilogue,
+            "structure_type": "chapters" if chapter_data else "unknown"
+        }
+        
+        print(f"✅ Final: Detected {len(chapter_data)} chapters with positions")
+        return structure
 
 
 
