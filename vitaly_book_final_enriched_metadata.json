@@ -1,0 +1,309 @@
+{
+  "book_information": {
+    "title": "VITALY: The Misadventures of a Ukrainian Orphan",
+    "subtitle": null,
+    "author": "Vitaly Magidov Kirkpatrick",
+    "co_author_editor": "Linda Forrest",
+    "isbn_paperback": "9798405565286",
+    "isbn_alternate": "9798425943651",
+    "publication_date": "February 11, 2022",
+    "first_printing": "August 2021",
+    "publisher": "Amazon Kindle, Independent Publishing",
+    "formats_available": ["Paperback", "Kindle eBook", "Audiobook (planned)"],
+    "pages": 386,
+    "language": "English",
+    "country_of_publication": "United States of America",
+    "printing_location": "Printed in the United States of America"
+  },
+  
+  "ratings_and_reviews": {
+    "goodreads": {
+      "rating": 4.50,
+      "ratings_count": 12,
+      "reviews_count": 5,
+      "rating_distribution": {
+        "5_stars": "7 (58%)",
+        "4_stars": "4 (33%)",
+        "3_stars": "1 (8%)",
+        "2_stars": "0 (0%)",
+        "1_star": "0 (0%)"
+      },
+      "currently_reading": 2,
+      "want_to_read": 812,
+      "url": "https://www.goodreads.com/book/show/60577880-vitaly"
+    },
+    "bookshop_org": {
+      "rating": 4.9,
+      "reviews_count": "21,000+",
+      "note": "Bookshop.org has the highest-rated customer service of any bookstore in the world"
+    },
+    "readers_favorite": {
+      "status": "Reviewed positively",
+      "note": "Emphasized Vitaly's desire to live despite overwhelming odds and praised emotional depth"
+    }
+  },
+  
+  "pricing": {
+    "paperback": "$15.99",
+    "kindle_unlimited": "$0.00 (with subscription)",
+    "retailers": [
+      {
+        "name": "Bookshop.org",
+        "price": "$15.99",
+        "url": "https://bookshop.org/p/books/vitaly-the-misadventures-of-a-ukrainian-orphan-linda-forrest/18380914"
+      },
+      {
+        "name": "Amazon",
+        "format": "Multiple formats available",
+        "url": "https://www.amazon.com/VITALY-Misadventures-Vitaly-Magidov-Kirkpatrick/dp/B09V2NM74M"
+      },
+      {
+        "name": "eBay",
+        "status": "Available from resellers",
+        "url": "https://www.ebay.com/itm/389099871539"
+      }
+    ]
+  },
+  
+  "description": {
+    "tagline": "A powerful and emotional LGBTQ memoir of resilience, identity, and survival — from a Ukrainian orphanage during the Cold War to finding freedom and belonging",
+    "short_synopsis": "This inspirational survival memoir begins in the shadows of a crumbling Soviet system - a small boy abandoned to a harsh Ukrainian orphanage. But this is more than a story of trauma and healing. It's one of the most uplifting LGBTQ books for adults about reclaiming self-worth and overcoming adversity.",
+    "full_description": "The inspiring story of a Ukrainian orphanage resident, Vitaly, who overcame adversity and achieved his dreams is a testament to the power of determination and self-belief. Vitaly's journey demonstrates that, regardless of life's challenges, one can accomplish anything with unwavering dedication and a strong belief in oneself.\n\nVitaly's memoir begins in a Ukrainian orphanage during the USSR era. His autobiography tells the story of growing up without parents and being in foster care. Despite these challenges, Vitaly refused to let his circumstances define him. Through determination, he overcame obstacles to become successful.\n\nRaised behind iron bars and silence, Vitaly was left by his mother at the age of six. He would spend the next 12 years navigating hunger, foster care, isolation, and emotional abuse - followed by the challenge of growing up gay in a world that didn't want him to exist. In a time and place where queerness was taboo and compassion was scarce, he dared to ask: 'Who am I, really?'\n\nNow, in his own voice, Vitaly tells his remarkable truth. This is not just an adoption story. This is a fierce coming-of-age LGBTQ memoir about reclaiming identity and rising from childhood trauma.",
+    "key_themes": [
+      "Orphanage life in USSR-era Ukraine",
+      "Foster care system and childhood abandonment",
+      "LGBTQ+ identity and acceptance",
+      "Immigration and cultural adaptation",
+      "Resilience and determination",
+      "Self-discovery and personal growth",
+      "Ukrainian culture and traditions",
+      "Trauma recovery and healing",
+      "Found family and belonging"
+    ]
+  },
+  
+  "genre_and_categories": {
+    "primary_genre": "Memoir / Autobiography",
+    "secondary_genres": [
+      "Nonfiction",
+      "LGBTQ+ Literature",
+      "Biography",
+      "Coming of Age",
+      "Cultural / Eastern European Studies",
+      "Trauma Recovery",
+      "Self-Help / Personal Development"
+    ],
+    "amazon_categories": [
+      "Biographies & Memoirs > Specific Groups > LGBTQ+",
+      "Biographies & Memoirs > Leaders & Notable People > Social Activists",
+      "Nonfiction > Social Sciences > Emigration & Immigration",
+      "Nonfiction > Cultural Studies > Eastern European"
+    ],
+    "keywords": [
+      "Ukrainian orphan memoir",
+      "LGBTQ autobiography",
+      "foster care survival story",
+      "Cold War Ukraine",
+      "trauma healing",
+      "queer identity",
+      "adoption story",
+      "resilience memoir",
+      "immigrant story"
+    ]
+  },
+  
+  "target_audience": {
+    "age_range": "Young Adults (16+) and Adults",
+    "amazon_age_recommendation": "Ages 10 years and up",
+    "recommended_for": [
+      "Adults 25-65 interested in immigration stories",
+      "LGBTQ+ community and allies",
+      "Readers interested in overcoming adversity",
+      "Those interested in Ukrainian culture and history",
+      "Social workers and foster care professionals",
+      "Memoir and autobiography enthusiasts",
+      "Trauma survivors seeking healing stories",
+      "Readers interested in Eastern European history"
+    ],
+    "content_warnings": [
+      "Childhood trauma and abandonment",
+      "Emotional abuse and hardship",
+      "LGBTQ+ themes and discrimination",
+      "Institutional care challenges",
+      "Alcoholism (mother's condition)",
+      "Emotional intensity"
+    ]
+  },
+  
+  "author_information": {
+    "full_name": "Vitaly Magidov Kirkpatrick",
+    "birth_location": "Ukraine (USSR era)",
+    "current_location": "United States",
+    "background": "Ukrainian-born author and advocate who draws from his own life experiences growing up as an orphan in Ukraine. His work focuses on themes of identity, trauma recovery, LGBTQ+ resilience, and found family.",
+    "mission": "Writes memoirs that aim to heal and inspire others facing similar challenges. Vitaly's story is one of survival and transformation, from a forgotten orphanage to becoming a bestselling memoir author and advocate for marginalized communities.",
+    "other_works": ["Stories That Heal (blog)", "Various articles on Ukrainian culture, LGBTQ+ resilience, and trauma recovery"],
+    "website": "www.vitalybook.com",
+    "email": "info@vitalybook.com",
+    "youtube": "https://www.youtube.com/@vitalybook",
+    "social_media": {
+      "goodreads": "https://www.goodreads.com/author/show/22286995.Vitaly_Magidov_Kirkpatrick",
+      "linkedin": "Active (mentioned in search results)"
+    }
+  },
+  
+  "production_details": {
+    "cover_designer": "Jake Naylor",
+    "editor": "Linda Forrest",
+    "typesetter": "Reedsy",
+    "dedication": "For orphans around the world and the people who show them love and care",
+    "cover_description": "Features a young boy (Vitaly) in the foreground with a Ukrainian landscape/sunset in the background. The title 'VITALY' is prominently displayed in white letters at the top, with 'THE MISADVENTURES OF A UKRAINIAN ORPHAN' and 'VITALY MAGIDOV' below.",
+    "interior_features": "Includes selection of photos giving life to the story"
+  },
+  
+  "sample_reviews_and_testimonials": [
+    {
+      "rating": 5,
+      "source": "Laura, Goodreads",
+      "excerpt": "When I purchased this book, I thought it would be another empathetic life story. Oh boy, how wrong I was! 'Vitaly' turned out to be the best book I've read in years. I always believe true stories are far more exciting and interesting than Fiction. I wasn't the same person when I finished reading, and I could feel the transformation. It's nothing short of magic."
+    },
+    {
+      "rating": 5,
+      "source": "Goodreads Reviewer",
+      "excerpt": "There's an especial poignancy in reading this book right now as war rages in Ukraine (June 2022) but it would make for poignant reading at any time... it's no misery memoir, but a clear-sighted and largely non-judgmental account of his life. Highly recommended."
+    },
+    {
+      "rating": 5,
+      "source": "Goodreads Reviewer",
+      "excerpt": "I think this book is deeply moving and truly inspiring, a transformational journey... Once you reach the end of the book, you will feel that you are a changed person, and not the same person who started reading. 'Vitaly' is not another autobiography, it's a transformational journey."
+    },
+    {
+      "rating": 5,
+      "source": "Arthur B., Biochemistry Consultant",
+      "excerpt": "This book really resonated with me. The feelings of being 'different' very much mirrored my own feelings growing up. And the way he described how he dealt with those feelings were also mine. Great!"
+    },
+    {
+      "rating": 5,
+      "source": "Jake N., Graphic Designer",
+      "excerpt": "Vitaly's story is one of a coming of age during a tumultuous time in Ukraine. It was fascinating to see his perseverance through difficult times, and to join him on his quest for love and acceptance."
+    },
+    {
+      "rating": 5,
+      "source": "Doug Kirkpatrick",
+      "excerpt": "Vitaly's story of boyhood life is so full of personal stories of his thinking, living, surviving trouble, satisfying curiosity, learning, not settling, and building confidence, that it is hard to put down. I loved it."
+    },
+    {
+      "rating": 5,
+      "source": "Rabia, Readersfavorite.com",
+      "excerpt": "I was surprised by how the story affected me. Instead of using fancy vocabulary and overly-descriptive imagery, authors Vitaly used simple language that your average reader could understand. My favorite was Into Adulthood because that was when he had more awareness and fire to live a better life he could be proud of. I loved this book!"
+    },
+    {
+      "rating": 4,
+      "source": "Goodreads Reviewer",
+      "excerpt": "I enjoyed reading this book, because it was not one of those 'I grew up in an orphanage and it was hell' books, but it gave a good view of what it was like growing up as a young boy in an orphanage in Ukraine, with all the ups and downs, but showing that there is a lot of optimism even in a situation like this."
+    }
+  ],
+  
+  "similar_books_recommendations": [
+    "The Glass Castle by Jeannette Walls",
+    "Educated by Tara Westover",
+    "A Child Called 'It' by Dave Pelzer",
+    "The Boy Who Was Raised as a Dog by Bruce D. Perry",
+    "Three Little Words by Ashley Rhodes-Courter",
+    "Redefining Realness by Janet Mock",
+    "The Short and Tragic Life of Robert Peace by Jeff Hobbs",
+    "Born a Crime by Trevor Noah"
+  ],
+  
+  "audiobook_production_metadata": {
+    "narrator_recommendations": {
+      "primary_voice_type": "Male, mature (35-55 years old)",
+      "vocal_characteristics": "Warm, reflective, emotionally expressive",
+      "accent": "Neutral American with ability to pronounce Ukrainian names authentically, or slight Eastern European accent",
+      "tone": "Intimate, storytelling, first-person memoir style",
+      "pacing": "Moderate to slow (150 words per minute standard memoir pace)",
+      "emotional_range": "Must convey childhood innocence, teenage confusion, adult reflection, trauma, hope, and triumph",
+      "special_requirements": [
+        "Ability to authentically portray childhood memories and voice",
+        "Emotional depth for trauma and healing narratives",
+        "Authentic pronunciation of Ukrainian names, places, and cultural terms",
+        "Sensitivity and authenticity for LGBTQ+ themes and coming-out narratives",
+        "Ability to convey vulnerability and strength simultaneously"
+      ],
+      "suggested_narrator_types": [
+        "LGBTQ+ narrator with personal connection to themes",
+        "Narrator with Eastern European heritage or language skills",
+        "Experienced memoir narrator with trauma-sensitive approach"
+      ]
+    },
+    "estimated_audiobook_specs": {
+      "total_words_estimated": "110,000-120,000 words (based on 386 pages)",
+      "estimated_duration": "12-14 hours",
+      "reading_pace": "150 words per minute (standard audiobook pace)",
+      "file_count": "47 chapter files + opening/closing credits",
+      "technical_specs": "192 kbps CBR MP3, -23dB to -18dB RMS, <-3dB peak, <-60dB noise floor"
+    },
+    "production_notes": [
+      "Prologue sets emotional tone - CRITICAL for retail sample (first 5 minutes)",
+      "Multiple Ukrainian names and places require pronunciation guide",
+      "Chapter 46 is very short (877 words) - consider combining with Epilogue",
+      "Sensitive LGBTQ+ content requires narrator with appropriate sensibility and lived experience preferred",
+      "Memoir style benefits from intimate, confessional first-person delivery",
+      "Emotional peaks in chapters about abandonment, foster care, and coming out",
+      "Cultural context of USSR-era Ukraine should be conveyed authentically",
+      "Balance between childhood innocence and adult reflection is key"
+    ],
+    "retail_sample_recommendation": "Use Prologue (first 5-7 minutes) as it establishes the emotional core and hooks listeners immediately"
+  },
+  
+  "acx_audible_compliance": {
+    "required_elements_present": true,
+    "opening_credits_script": "VITALY: The Misadventures of a Ukrainian Orphan, written by Vitaly Magidov Kirkpatrick, narrated by [Narrator Name]",
+    "closing_credits_script": "You have been listening to VITALY: The Misadventures of a Ukrainian Orphan, written by Vitaly Magidov Kirkpatrick, narrated by [Narrator Name]. Copyright 2021 by Vitaly Magidov Kirkpatrick. The End.",
+    "retail_sample": "First 5 minutes (Prologue recommended)",
+    "file_structure": "One chapter per file, properly labeled (01_Prologue.mp3, 02_Chapter_01_Once_Upon_a_Time.mp3, etc.)",
+    "audio_technical_requirements": {
+      "format": "192 kbps CBR MP3",
+      "rms_level": "-23dB to -18dB",
+      "peak_level": "<-3dB",
+      "noise_floor": "<-60dB",
+      "sample_rate": "44.1 kHz or 48 kHz",
+      "bit_depth": "16-bit minimum"
+    },
+    "content_advisory": "Contains mature themes including childhood trauma, abandonment, LGBTQ+ content. Recommended for ages 16+",
+    "categories_for_acx": [
+      "Biographies & Memoirs > Memoirs",
+      "LGBTQ+ > Nonfiction",
+      "Biographies & Memoirs > Specific Groups > LGBT",
+      "Self Development > Personal Growth"
+    ]
+  },
+  
+  "marketing_and_discoverability": {
+    "unique_selling_points": [
+      "Authentic first-person LGBTQ+ memoir from Ukrainian orphan",
+      "Timely relevance with current Ukraine situation",
+      "Intersectional story: orphan + LGBTQ+ + immigrant",
+      "Transformational journey from trauma to advocacy",
+      "Cultural insights into USSR-era Ukraine",
+      "Universal themes of belonging and identity"
+    ],
+    "comp_titles": [
+      "The Glass Castle (memoir about overcoming childhood poverty)",
+      "Educated (memoir about escaping difficult upbringing)",
+      "Redefining Realness (LGBTQ+ memoir)",
+      "Born a Crime (international memoir about overcoming adversity)"
+    ],
+    "search_keywords": [
+      "Ukrainian orphan memoir",
+      "LGBTQ autobiography",
+      "foster care survival",
+      "Cold War Ukraine",
+      "trauma healing memoir",
+      "queer identity coming out",
+      "adoption memoir",
+      "resilience story",
+      "immigrant autobiography",
+      "Eastern European memoir"
+    ]
+  }
+}
