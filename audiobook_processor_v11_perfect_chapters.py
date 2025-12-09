@@ -6,7 +6,6 @@ AudiobookSmith Book Processor v11 - PERFECT Chapter Detection
 - Complete analysis page with chapters AND voice samples
 """
 
-from progress_tracker import ProgressTracker
 import os
 import re
 import json

@@ -1,0 +1,143 @@
+2025-12-08 23:43:12,436 - INFO - ================================================================================
+2025-12-08 23:43:12,436 - INFO - HYBRID CHAPTER SPLITTER - PRODUCTION
+2025-12-08 23:43:12,436 - INFO - ================================================================================
+2025-12-08 23:43:12,436 - INFO - 
+STEP 1: PDF Text Extraction
+2025-12-08 23:43:12,436 - INFO -   Trying pdfplumber...
+2025-12-08 23:43:30,757 - INFO -   ✓ pdfplumber successful
+2025-12-08 23:43:30,770 - INFO - ✅ Extracted 499,005 characters using pdfplumber
+2025-12-08 23:43:30,770 - INFO - 
+STEP 2: Table of Contents Extraction (V7 Method)
+2025-12-08 23:43:30,774 - INFO -   Extracted 49 chapter titles from TOC
+2025-12-08 23:43:30,774 - INFO -   First 3: ['Prologue iv', '1 OnceUponaTime', '2 MyFirstMisadventure']
+2025-12-08 23:43:30,774 - INFO - ✅ Found 49 chapters in TOC
+2025-12-08 23:43:30,774 - INFO - 
+STEP 3: Chapter Location & Validation
+2025-12-08 23:43:30,776 - INFO -   Found TOC end marker: 'prologue' at position 2,643
+2025-12-08 23:43:30,776 - INFO -   TOC ends at position 2,643
+2025-12-08 23:43:34,731 - INFO -   ✓ Found: Prologue iv (16856 words)
+2025-12-08 23:43:34,738 - INFO -   ✓ Found: 1 OnceUponaTime (16373 words)
+2025-12-08 23:43:34,745 - INFO -   ✓ Found: 2 MyFirstMisadventure (16210 words)
+2025-12-08 23:43:34,751 - INFO -   ✓ Found: 3 LullabiesintheRain (15865 words)
+2025-12-08 23:43:34,758 - INFO -   ✓ Found: 4 TheBuriedSecret (15737 words)
+2025-12-08 23:43:34,764 - INFO -   ✓ Found: 5 ChildishLove (15424 words)
+2025-12-08 23:43:34,770 - INFO -   ✓ Found: 6 Bandits (15652 words)
+2025-12-08 23:43:34,776 - INFO -   ✓ Found: 7 Octobrists’Summer (15092 words)
+2025-12-08 23:43:34,782 - INFO -   ✓ Found: 8 QueenofSpades (14710 words)
+2025-12-08 23:43:34,788 - INFO -   ✓ Found: 9 Zarnitsa (14165 words)
+2025-12-08 23:43:34,794 - INFO -   ✓ Found: 10 TalentShow (13703 words)
+2025-12-08 23:43:34,799 - INFO -   ✓ Found: 11 Botsya’sMother (13433 words)
+2025-12-08 23:43:34,805 - INFO -   ✓ Found: 12 LovedOnesLost (12909 words)
+2025-12-08 23:43:34,811 - INFO -   ✓ Found: 13 Chernobyl (12705 words)
+2025-12-08 23:43:34,817 - INFO -   ✓ Found: 14 PanKotsky (12283 words)
+2025-12-08 23:43:34,823 - INFO -   ✓ Found: 15 TheLord’sPrayer (11931 words)
+2025-12-08 23:43:34,828 - INFO -   ✓ Found: 16 TooBloodyCurious (11586 words)
+2025-12-08 23:43:34,834 - INFO -   ✓ Found: 17 MyDearMommy (11259 words)
+2025-12-08 23:43:34,839 - INFO -   ✓ Found: 18 SurpriseVisit (10988 words)
+2025-12-08 23:43:34,845 - INFO -   ✓ Found: 19 ANewFamily (11224 words)
+2025-12-08 23:43:34,850 - INFO -   ✓ Found: 20 BazaarFood (10193 words)
+2025-12-08 23:43:34,856 - INFO -   ✓ Found: 21 Seconds (16177 words)
+2025-12-08 23:43:34,862 - INFO -   ✓ Found: 22 BraDag,Sweden! (9379 words)
+2025-12-08 23:43:34,867 - INFO -   ✓ Found: 23 OurNewHome (8885 words)
+2025-12-08 23:43:34,873 - INFO -   ✓ Found: 24 PlayingGames (8465 words)
+2025-12-08 23:43:34,878 - INFO -   ✓ Found: 25 NewFriends (9225 words)
+2025-12-08 23:43:34,884 - INFO -   ✓ Found: 26 ThePowerofWords (7689 words)
+2025-12-08 23:43:34,888 - INFO -   ✓ Found: 27 HistoryLesson (7446 words)
+2025-12-08 23:43:34,893 - INFO -   ✓ Found: 28 MySweetSixteen (7180 words)
+2025-12-08 23:43:34,898 - INFO -   ✓ Found: 29 ChristmasTraditions (6789 words)
+2025-12-08 23:43:34,903 - INFO -   ✓ Found: 30 CaroloftheBells (6390 words)
+2025-12-08 23:43:34,908 - INFO -   ✓ Found: 31 MuchNeededHelp (6070 words)
+2025-12-08 23:43:34,913 - INFO -   ✓ Found: 32 FamilyReunion (5922 words)
+2025-12-08 23:43:34,918 - INFO -   ✓ Found: 33 ImpossibleDreams (5555 words)
+2025-12-08 23:43:34,923 - INFO -   ✓ Found: 34 VocationalSchool (6143 words)
+2025-12-08 23:43:34,927 - INFO -   ✓ Found: 35 MyFirstJob (4822 words)
+2025-12-08 23:43:34,932 - INFO -   ✓ Found: 36 Valya’sGreed (4662 words)
+2025-12-08 23:43:34,938 - INFO -   ✓ Found: 37 Girls (14565 words)
+2025-12-08 23:43:34,943 - INFO -   ✓ Found: 38 NewLifeandLoss (3912 words)
+2025-12-08 23:43:34,948 - INFO -   ✓ Found: 39 TheOneWhoLoved (3428 words)
+2025-12-08 23:43:34,953 - INFO -   ✓ Found: 40 University (8785 words)
+2025-12-08 23:43:34,958 - INFO -   ✓ Found: 41 SearchingforJesus (2811 words)
+2025-12-08 23:43:34,962 - INFO -   ✓ Found: 42 TheEvilsofAlcohol (2471 words)
+2025-12-08 23:43:34,967 - INFO -   ✓ Found: 43 Disappointment (8856 words)
+2025-12-08 23:43:34,972 - INFO -   ✓ Found: 44 BrokenFamilies (1675 words)
+2025-12-08 23:43:34,977 - INFO -   ✓ Found: 45 Choices (16483 words)
+2025-12-08 23:43:34,983 - INFO -   ✓ Found: 46 Beginnings Start with Endings (877 words)
+2025-12-08 23:43:37,755 - WARNING -   ✗ Not found: Epilogue 359
+2025-12-08 23:43:37,757 - INFO -   ✓ Found: Prologue (16856 words)
+2025-12-08 23:43:37,757 - INFO - ✅ Located 48 chapters (98.0% of TOC)
+2025-12-08 23:43:37,757 - INFO - 
+STEP 4: Quality Validation
+2025-12-08 23:43:37,758 - INFO -   ✓ Validated: Prologue iv (score: 1.00)
+2025-12-08 23:43:37,759 - INFO -   ✓ Validated: 1 OnceUponaTime (score: 1.00)
+2025-12-08 23:43:37,760 - INFO -   ✓ Validated: 2 MyFirstMisadventure (score: 1.00)
+2025-12-08 23:43:37,760 - INFO -   ✓ Validated: 3 LullabiesintheRain (score: 1.00)
+2025-12-08 23:43:37,761 - INFO -   ✓ Validated: 4 TheBuriedSecret (score: 1.00)
+2025-12-08 23:43:37,762 - INFO -   ✓ Validated: 5 ChildishLove (score: 1.00)
+2025-12-08 23:43:37,763 - INFO -   ✓ Validated: 6 Bandits (score: 1.00)
+2025-12-08 23:43:37,763 - INFO -   ✓ Validated: 7 Octobrists’Summer (score: 1.00)
+2025-12-08 23:43:37,764 - INFO -   ✓ Validated: 8 QueenofSpades (score: 1.00)
+2025-12-08 23:43:37,764 - INFO -   ✓ Validated: 9 Zarnitsa (score: 1.00)
+2025-12-08 23:43:37,765 - INFO -   ✓ Validated: 10 TalentShow (score: 1.00)
+2025-12-08 23:43:37,766 - INFO -   ✓ Validated: 11 Botsya’sMother (score: 1.00)
+2025-12-08 23:43:37,766 - INFO -   ✓ Validated: 12 LovedOnesLost (score: 1.00)
+2025-12-08 23:43:37,767 - INFO -   ✓ Validated: 13 Chernobyl (score: 1.00)
+2025-12-08 23:43:37,767 - INFO -   ✓ Validated: 14 PanKotsky (score: 1.00)
+2025-12-08 23:43:37,768 - INFO -   ✓ Validated: 15 TheLord’sPrayer (score: 1.00)
+2025-12-08 23:43:37,768 - INFO -   ✓ Validated: 16 TooBloodyCurious (score: 1.00)
+2025-12-08 23:43:37,769 - INFO -   ✓ Validated: 17 MyDearMommy (score: 1.00)
+2025-12-08 23:43:37,769 - INFO -   ✓ Validated: 18 SurpriseVisit (score: 1.00)
+2025-12-08 23:43:37,770 - INFO -   ✓ Validated: 19 ANewFamily (score: 1.00)
+2025-12-08 23:43:37,770 - INFO -   ✓ Validated: 20 BazaarFood (score: 1.00)
+2025-12-08 23:43:37,771 - INFO -   ✓ Validated: 21 Seconds (score: 1.00)
+2025-12-08 23:43:37,771 - INFO -   ✓ Validated: 22 BraDag,Sweden! (score: 1.00)
+2025-12-08 23:43:37,772 - INFO -   ✓ Validated: 23 OurNewHome (score: 1.00)
+2025-12-08 23:43:37,772 - INFO -   ✓ Validated: 24 PlayingGames (score: 1.00)
+2025-12-08 23:43:37,773 - INFO -   ✓ Validated: 25 NewFriends (score: 1.00)
+2025-12-08 23:43:37,773 - INFO -   ✓ Validated: 26 ThePowerofWords (score: 1.00)
+2025-12-08 23:43:37,773 - INFO -   ✓ Validated: 27 HistoryLesson (score: 1.00)
+2025-12-08 23:43:37,774 - INFO -   ✓ Validated: 28 MySweetSixteen (score: 1.00)
+2025-12-08 23:43:37,774 - INFO -   ✓ Validated: 29 ChristmasTraditions (score: 1.00)
+2025-12-08 23:43:37,774 - INFO -   ✓ Validated: 30 CaroloftheBells (score: 1.00)
+2025-12-08 23:43:37,775 - INFO -   ✓ Validated: 31 MuchNeededHelp (score: 1.00)
+2025-12-08 23:43:37,775 - INFO -   ✓ Validated: 32 FamilyReunion (score: 1.00)
+2025-12-08 23:43:37,775 - INFO -   ✓ Validated: 33 ImpossibleDreams (score: 1.00)
+2025-12-08 23:43:37,775 - INFO -   ✓ Validated: 34 VocationalSchool (score: 1.00)
+2025-12-08 23:43:37,776 - INFO -   ✓ Validated: 35 MyFirstJob (score: 1.00)
+2025-12-08 23:43:37,776 - INFO -   ✓ Validated: 36 Valya’sGreed (score: 1.00)
+2025-12-08 23:43:37,777 - INFO -   ✓ Validated: 37 Girls (score: 1.00)
+2025-12-08 23:43:37,777 - INFO -   ✓ Validated: 38 NewLifeandLoss (score: 1.00)
+2025-12-08 23:43:37,777 - INFO -   ✓ Validated: 39 TheOneWhoLoved (score: 1.00)
+2025-12-08 23:43:37,777 - INFO -   ✓ Validated: 40 University (score: 0.90)
+2025-12-08 23:43:37,777 - INFO -   ✓ Validated: 41 SearchingforJesus (score: 1.00)
+2025-12-08 23:43:37,778 - INFO -   ✓ Validated: 42 TheEvilsofAlcohol (score: 1.00)
+2025-12-08 23:43:37,778 - INFO -   ✓ Validated: 43 Disappointment (score: 1.00)
+2025-12-08 23:43:37,778 - INFO -   ✓ Validated: 44 BrokenFamilies (score: 0.90)
+2025-12-08 23:43:37,779 - INFO -   ✓ Validated: 45 Choices (score: 1.00)
+2025-12-08 23:43:37,779 - INFO -   ✓ Validated: 46 Beginnings Start with Endings (score: 0.80)
+2025-12-08 23:43:37,780 - INFO -   ✓ Validated: Prologue (score: 1.00)
+2025-12-08 23:43:37,780 - INFO - ✅ Validated 48 high-quality chapters
+2025-12-08 23:43:37,780 - INFO - 
+================================================================================
+2025-12-08 23:43:37,780 - INFO - FINAL RESULT: 48 chapters (98.0% accuracy)
+2025-12-08 23:43:37,780 - INFO - ================================================================================
+2025-12-08 23:43:43,996 - INFO - HTTP Request: POST https://api.manus.im/api/llm-proxy/v1/chat/completions "HTTP/1.1 200 OK"
+🎙️  AudiobookSmith V13 - AI-Powered Voice Recommendations
+================================================================================
+
+📖 Step 1: Extracting chapters...
+✅ Found 48 chapters
+
+💾 Step 2: Saving chapter files...
+
+🤖 Step 3: Analyzing book for voice recommendations...
+✅ AI analysis complete
+
+📊 Step 4: Generating analysis page...
+✅ Analysis page: CopyofVITALYBOOK-FINAPPUBLISHEDCOPYONAMZN_v13_analysis_20251208_234312/analysis.html
+
+================================================================================
+🎉 Processing complete! Output: CopyofVITALYBOOK-FINAPPUBLISHEDCOPYONAMZN_v13_analysis_20251208_234312
+
+✅ Success! Found 48 chapters
+📁 Output: CopyofVITALYBOOK-FINAPPUBLISHEDCOPYONAMZN_v13_analysis_20251208_234312
+🎙️  Voice recommendations: 4

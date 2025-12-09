@@ -1,0 +1,640 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudiobookSmith V12 - Analysis Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .status-banner {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            font-size: 1em;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .chapter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .chapter-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .chapter-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .chapter-table tbody tr {
+            border-bottom: 1px solid #dee2e6;
+            transition: background-color 0.2s;
+        }
+        
+        .chapter-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .chapter-table td {
+            padding: 12px 15px;
+        }
+        
+        .badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .algorithm-features {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .algorithm-features h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        
+        .algorithm-features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .algorithm-features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .algorithm-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 AudiobookSmith V12</h1>
+            <p>Hybrid Chapter Splitter - Production Results</p>
+        </div>
+        
+        <div class="status-banner">
+            SUCCESS: Successfully extracted 48 chapters
+        </div>
+        
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-label">Chapters Found</div>
+                <div class="metric-value">48</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Accuracy</div>
+                <div class="metric-value">98.0%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Extraction Method</div>
+                <div class="metric-value" style="font-size: 1.5em;">pdfplumber</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Words</div>
+                <div class="metric-value">489,816</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2 class="section-title">📖 Chapter Details</h2>
+            
+            <table class="chapter-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Words</th>
+                        <th>Confidence</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+            <tr>
+                <td>1</td>
+                <td><strong>Prologue iv</strong></td>
+                <td>16,856</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>2</td>
+                <td><strong>1 OnceUponaTime</strong></td>
+                <td>16,373</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>3</td>
+                <td><strong>2 MyFirstMisadventure</strong></td>
+                <td>16,210</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>4</td>
+                <td><strong>3 LullabiesintheRain</strong></td>
+                <td>15,865</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>5</td>
+                <td><strong>4 TheBuriedSecret</strong></td>
+                <td>15,737</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>6</td>
+                <td><strong>5 ChildishLove</strong></td>
+                <td>15,424</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>7</td>
+                <td><strong>6 Bandits</strong></td>
+                <td>15,652</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td><strong>7 Octobrists’Summer</strong></td>
+                <td>15,092</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>9</td>
+                <td><strong>8 QueenofSpades</strong></td>
+                <td>14,710</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>10</td>
+                <td><strong>9 Zarnitsa</strong></td>
+                <td>14,165</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>11</td>
+                <td><strong>10 TalentShow</strong></td>
+                <td>13,703</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>12</td>
+                <td><strong>11 Botsya’sMother</strong></td>
+                <td>13,433</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>13</td>
+                <td><strong>12 LovedOnesLost</strong></td>
+                <td>12,909</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>14</td>
+                <td><strong>13 Chernobyl</strong></td>
+                <td>12,705</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>15</td>
+                <td><strong>14 PanKotsky</strong></td>
+                <td>12,283</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>16</td>
+                <td><strong>15 TheLord’sPrayer</strong></td>
+                <td>11,931</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>17</td>
+                <td><strong>16 TooBloodyCurious</strong></td>
+                <td>11,586</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>18</td>
+                <td><strong>17 MyDearMommy</strong></td>
+                <td>11,259</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>19</td>
+                <td><strong>18 SurpriseVisit</strong></td>
+                <td>10,988</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>20</td>
+                <td><strong>19 ANewFamily</strong></td>
+                <td>11,224</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>21</td>
+                <td><strong>20 BazaarFood</strong></td>
+                <td>10,193</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>22</td>
+                <td><strong>21 Seconds</strong></td>
+                <td>16,177</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>23</td>
+                <td><strong>22 BraDag,Sweden!</strong></td>
+                <td>9,379</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>24</td>
+                <td><strong>23 OurNewHome</strong></td>
+                <td>8,885</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>25</td>
+                <td><strong>24 PlayingGames</strong></td>
+                <td>8,465</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>26</td>
+                <td><strong>25 NewFriends</strong></td>
+                <td>9,225</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>27</td>
+                <td><strong>26 ThePowerofWords</strong></td>
+                <td>7,689</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>28</td>
+                <td><strong>27 HistoryLesson</strong></td>
+                <td>7,446</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>29</td>
+                <td><strong>28 MySweetSixteen</strong></td>
+                <td>7,180</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>30</td>
+                <td><strong>29 ChristmasTraditions</strong></td>
+                <td>6,789</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>31</td>
+                <td><strong>30 CaroloftheBells</strong></td>
+                <td>6,390</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>32</td>
+                <td><strong>31 MuchNeededHelp</strong></td>
+                <td>6,070</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>33</td>
+                <td><strong>32 FamilyReunion</strong></td>
+                <td>5,922</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>34</td>
+                <td><strong>33 ImpossibleDreams</strong></td>
+                <td>5,555</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>35</td>
+                <td><strong>34 VocationalSchool</strong></td>
+                <td>6,143</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>36</td>
+                <td><strong>35 MyFirstJob</strong></td>
+                <td>4,822</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>37</td>
+                <td><strong>36 Valya’sGreed</strong></td>
+                <td>4,662</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>38</td>
+                <td><strong>37 Girls</strong></td>
+                <td>14,565</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>39</td>
+                <td><strong>38 NewLifeandLoss</strong></td>
+                <td>3,912</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>40</td>
+                <td><strong>39 TheOneWhoLoved</strong></td>
+                <td>3,428</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>41</td>
+                <td><strong>40 University</strong></td>
+                <td>8,785</td>
+                <td><span style="color: #28a745; font-weight: bold;">0.90</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>42</td>
+                <td><strong>41 SearchingforJesus</strong></td>
+                <td>2,811</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>43</td>
+                <td><strong>42 TheEvilsofAlcohol</strong></td>
+                <td>2,471</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>44</td>
+                <td><strong>43 Disappointment</strong></td>
+                <td>8,856</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>45</td>
+                <td><strong>44 BrokenFamilies</strong></td>
+                <td>1,675</td>
+                <td><span style="color: #28a745; font-weight: bold;">0.90</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>46</td>
+                <td><strong>45 Choices</strong></td>
+                <td>16,483</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>47</td>
+                <td><strong>46 Beginnings Start with Endings</strong></td>
+                <td>877</td>
+                <td><span style="color: #ffc107; font-weight: bold;">0.80</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+            <tr>
+                <td>48</td>
+                <td><strong>Prologue</strong></td>
+                <td>16,856</td>
+                <td><span style="color: #28a745; font-weight: bold;">1.00</span></td>
+                <td><span class="badge" style="background-color: #6c757d;">automatic</span></td>
+            </tr>
+            
+                </tbody>
+            </table>
+            
+            <div class="algorithm-features">
+                <h3>🚀 V12 Hybrid Algorithm Features</h3>
+                <ul>
+                    <li><strong>Multi-Method PDF Extraction:</strong> Tries pdfplumber, PyMuPDF, and PyPDF2 for best results</li>
+                    <li><strong>V7 PERFECT TOC Extraction:</strong> Proven camelCase handling and pattern matching</li>
+                    <li><strong>Smart Chapter Location:</strong> Searches AFTER TOC to avoid false positives</li>
+                    <li><strong>Three-Layer Validation:</strong> TOC + Pattern + ML confidence scoring</li>
+                    <li><strong>Quality Filtering:</strong> Validates content length, sentence structure, and title quality</li>
+                    <li><strong>Universal Support:</strong> Works with fiction, non-fiction, any language</li>
+                    <li><strong>Fallback Strategies:</strong> User-provided chapter list support</li>
+                    <li><strong>Zero False Positives:</strong> Filters page headers and section markers</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>AudiobookSmith Processor V12</strong></p>
+            <p>Generated: 2025-12-08 22:42:23</p>
+            <p>PDF: CopyofVITALYBOOK-FINAPPUBLISHEDCOPYONAMZN.pdf</p>
+        </div>
+    </div>
+</body>
+</html>
+        
