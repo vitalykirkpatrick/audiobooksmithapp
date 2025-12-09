@@ -305,7 +305,6 @@ Return ONLY a JSON object:
     
     
     def ai_detect_chapters(self, text):
-    def ai_detect_chapters(self, text):
         """Detect chapters using hybrid AI + regex with chunked analysis"""
         print(f"[4/7] Detecting chapters with hybrid AI + regex approach...")
         
