@@ -390,9 +390,8 @@ Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
         combined_chapters = list(dict.fromkeys(all_chapters + regex_chapters))
         print(f"✅ Combined total: {len(combined_chapters)} unique chapters")
         
-        # Filter out obvious false positives
+        # Filter out obvious false positives (but keep legitimate duplicates)
         filtered_chapters = []
-        seen_titles = set()
         for ch in combined_chapters:
             # Skip very short titles (likely page numbers)
             if len(ch) < 5:
@@ -400,11 +399,9 @@ Return format: {{"chapters": ["Chapter 1", "Chapter 2", ...]}}"""
             # Skip if it's just a number
             if ch.strip().isdigit():
                 continue
-            # Skip repeated book titles in headers
-            title_lower = ch.lower()
-            if title_lower in seen_titles:
+            # Skip if it's all caps and very short (page header)
+            if ch.isupper() and len(ch) < 15:
                 continue
-            seen_titles.add(title_lower)
             filtered_chapters.append(ch)
         
         print(f"📊 After filtering: {len(filtered_chapters)} chapters")
